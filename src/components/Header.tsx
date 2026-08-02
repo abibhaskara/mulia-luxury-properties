@@ -45,14 +45,9 @@ export default function Header({ activeTab, setActiveTab, onRefreshData }: Heade
           <div className="flex items-center gap-3">
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <h1 className="font-bold text-lg text-black">Harsalab Studio</h1>
-                <span className="text-xs uppercase font-bold border border-black px-1 text-black">
-                  CRM Properti
-                </span>
+                <h1 className="font-bold text-xl text-black tracking-tight">Harsalab Studio</h1>
               </div>
-              <p className="text-xs text-black hidden sm:block">
-                Sistem Manajemen Properti & Client Matching Cerdas
-              </p>
+
             </div>
           </div>
 
