@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "pages:build": "npx @cloudflare/next-on-pages --legacy-peer-deps",
     "start": "next start",
     "lint": "eslint"
   },
