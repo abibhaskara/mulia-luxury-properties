@@ -66,31 +66,37 @@ export default function AIMatchModal({ initialBuyer, buyersList, onClose }: AIMa
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/90 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-4xl bg-white border border-black overflow-hidden my-8 max-h-[92vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" style={{ backgroundColor: "rgba(17,17,17,0.5)", backdropFilter: "blur(4px)" }}>
+      <div className="relative w-full max-w-4xl overflow-hidden my-8 max-h-[92vh] flex flex-col rounded-2xl border" style={{ backgroundColor: "#ffffff", borderColor: "#ebebeb" }}>
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-black bg-white">
+        <div className="flex items-center justify-between px-6 py-4 border-b shrink-0" style={{ borderColor: "#ebebeb" }}>
           <div className="flex items-center gap-3">
+            <div
+              className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+              style={{ backgroundColor: "#111" }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+              </svg>
+            </div>
             <div>
-              <h3 className="text-lg font-bold text-black flex items-center gap-2">
-                AI Property Matcher
-              </h3>
-              <p className="text-xs text-black">
-                Pencocokan AI Similarity antara preferensi buyer & listing properti
+              <h3 className="text-base font-bold" style={{ color: "#111" }}>AI Property Matcher</h3>
+              <p className="text-[11px]" style={{ color: "#9ca3af" }}>
+                Pencocokan AI similarity antara preferensi buyer &amp; listing properti
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="text-black font-bold hover:underline"
+            className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors hover:bg-gray-100 text-gray-400 hover:text-gray-700"
           >
-            [X]
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
           </button>
         </div>
 
         {/* Selection Bar */}
-        <div className="p-4 bg-white border-b border-black space-y-3">
+        <div className="p-4 border-b space-y-3" style={{ borderColor: "#ebebeb", backgroundColor: "#f9f9f9" }}>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-4 text-xs">
               <label className="flex items-center gap-2 cursor-pointer text-black">

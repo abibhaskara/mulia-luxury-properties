@@ -74,7 +74,7 @@ export async function generateMatchPitch(buyerInfo: any, listingInfo: any, score
   if (genAI) {
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      const prompt = `You are a top real estate AI assistant for Harsalab Studio Property Agency.
+      const prompt = `You are a top real estate AI assistant for Mulia Luxury Property Agency.
 Analyze this property listing match for buyer "${buyerInfo.nama_klien}":
 - Buyer Requirements: Type=${buyerInfo.jenis_dicari || "Any"}, Location=${buyerInfo.lokasi_dicari || "Any"}, Budget=Rp ${(buyerInfo.budget_min || 0).toLocaleString()} - Rp ${(buyerInfo.budget_max || 0).toLocaleString()}, Min Bedrooms=${buyerInfo.kt_min || 0}. Notes: ${buyerInfo.catatan || "None"}
 - Property Listing: Code=${listingInfo.kode}, Type=${listingInfo.jenis}, Location=${listingInfo.lokasi_area}, Price=Rp ${(listingInfo.harga || 0).toLocaleString()}, Bedrooms=${listingInfo.kamar_tidur}, Furnished=${listingInfo.furnished}. Details: ${listingInfo.catatan || "None"}

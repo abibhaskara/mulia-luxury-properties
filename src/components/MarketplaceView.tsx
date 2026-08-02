@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Listing } from "@/db/schema";
-
 import PropertyDetailModal from "./PropertyDetailModal";
 
 interface MarketplaceViewProps {
@@ -10,31 +9,42 @@ interface MarketplaceViewProps {
   onOpenMatchModal?: (listing: Listing) => void;
 }
 
-export default function MarketplaceView({ listings, onOpenMatchModal }: MarketplaceViewProps) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedJenis, setSelectedJenis] = useState("ALL");
-  const [selectedStatus, setSelectedStatus] = useState("ALL");
-  const [selectedSewaJual, setSelectedSewaJual] = useState("ALL");
-  const [maxPriceFilter, setMaxPriceFilter] = useState<number>(0);
-  const [activeListingModal, setActiveListingModal] = useState<Listing | null>(null);
+// ─── Pastel palette by property type ────────────────────────────────────────
+const PASTEL_BG: Record<string, string> = {
+  VILLA:   "#e5f4e8",
+  RUMAH:   "#fdf5e4",
+  RUKO:    "#ede8fd",
+  TANAH:   "#e3edfd",
+};
+const PASTEL_ACCENT: Record<string, string> = {
+  VILLA:   "#16a34a",
+  RUMAH:   "#d97706",
+  RUKO:    "#7c3aed",
+  TANAH:   "#2563eb",
+};
 
-  // Image slider active indices
+// ─── Status config ───────────────────────────────────────────────────────────
+const STATUS_STYLE: Record<string, { bg: string; color: string; label: string }> = {
+  AVAILABLE: { bg: "#dcfce7", color: "#16a34a", label: "Tersedia" },
+  BOOKING:   { bg: "#fef3c7", color: "#d97706", label: "Booking" },
+  SOLD:      { bg: "#f3f4f6", color: "#6b7280", label: "Terjual" },
+};
+
+export default function MarketplaceView({ listings, onOpenMatchModal }: MarketplaceViewProps) {
+  const [searchTerm, setSearchTerm]             = useState("");
+  const [selectedJenis, setSelectedJenis]       = useState("ALL");
+  const [selectedStatus, setSelectedStatus]     = useState("ALL");
+  const [selectedSewaJual, setSelectedSewaJual] = useState("ALL");
+  const [activeListingModal, setActiveListingModal] = useState<Listing | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState<Record<string, number>>({});
 
   const handleNextImage = (id: string, total: number, e: React.MouseEvent) => {
     e.stopPropagation();
-    setActiveImageIndex((prev) => ({
-      ...prev,
-      [id]: ((prev[id] || 0) + 1) % total,
-    }));
+    setActiveImageIndex((p) => ({ ...p, [id]: ((p[id] || 0) + 1) % total }));
   };
-
   const handlePrevImage = (id: string, total: number, e: React.MouseEvent) => {
     e.stopPropagation();
-    setActiveImageIndex((prev) => ({
-      ...prev,
-      [id]: ((prev[id] || 0) - 1 + total) % total,
-    }));
+    setActiveImageIndex((p) => ({ ...p, [id]: ((p[id] || 0) - 1 + total) % total }));
   };
 
   const filteredListings = listings.filter((item) => {
@@ -47,271 +57,285 @@ export default function MarketplaceView({ listings, onOpenMatchModal }: Marketpl
       (item.catatan && item.catatan.toLowerCase().includes(q)) ||
       (item.nama_pemilik && item.nama_pemilik.toLowerCase().includes(q));
 
-    const matchesJenis = selectedJenis === "ALL" || item.jenis === selectedJenis;
-    const matchesStatus = selectedStatus === "ALL" || item.status === selectedStatus;
-    const matchesSewaJual = selectedSewaJual === "ALL" || item.sewa_jual === selectedSewaJual;
-    const matchesPrice = maxPriceFilter === 0 || item.harga <= maxPriceFilter;
-
-    return matchesSearch && matchesJenis && matchesStatus && matchesSewaJual && matchesPrice;
+    return (
+      matchesSearch &&
+      (selectedJenis    === "ALL" || item.jenis     === selectedJenis) &&
+      (selectedStatus   === "ALL" || item.status    === selectedStatus) &&
+      (selectedSewaJual === "ALL" || item.sewa_jual === selectedSewaJual)
+    );
   });
 
   const formatPrice = (price: number) => {
-    if (price >= 1000000000) {
-      return `Rp ${(price / 1000000000).toLocaleString("id-ID", { maximumFractionDigits: 2 })} M`;
-    }
-    return `Rp ${(price / 1000000).toLocaleString("id-ID", { maximumFractionDigits: 0 })} Jt`;
+    if (price >= 1_000_000_000)
+      return `Rp ${(price / 1_000_000_000).toLocaleString("id-ID", { maximumFractionDigits: 2 })} M`;
+    return `Rp ${(price / 1_000_000).toLocaleString("id-ID", { maximumFractionDigits: 0 })} Jt`;
+  };
+
+  const resetFilters = () => {
+    setSearchTerm(""); setSelectedJenis("ALL");
+    setSelectedStatus("ALL"); setSelectedSewaJual("ALL");
+  };
+  const hasFilter = searchTerm || selectedJenis !== "ALL" || selectedStatus !== "ALL" || selectedSewaJual !== "ALL";
+
+  // ─── Stats ─────────────────────────────────────────────────────────────────
+  const stats = {
+    total:     listings.length,
+    available: listings.filter((l) => l.status === "AVAILABLE").length,
+    booking:   listings.filter((l) => l.status === "BOOKING").length,
+    sold:      listings.filter((l) => l.status === "SOLD").length,
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
 
-      {/* Banner / Hero Header */}
-      <div className="border border-black p-6 sm:p-8 bg-white">
-        <div className="max-w-2xl space-y-3">
-          <div className="inline-flex items-center gap-2 px-2 py-0.5 border border-black text-black text-xs font-bold uppercase">
-            Katalog Properti
+      {/* ── Stats Summary Row ─────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          { label: "Total Properti",  value: stats.total,     color: "#111111" },
+          { label: "Available",       value: stats.available,  color: "#16a34a" },
+          { label: "Dalam Booking",   value: stats.booking,    color: "#d97706" },
+          { label: "Terjual",         value: stats.sold,       color: "#6b7280" },
+        ].map((s) => (
+          <div
+            key={s.label}
+            className="rounded-2xl p-4 border"
+            style={{ backgroundColor: "#ffffff", borderColor: "#ebebeb" }}
+          >
+            <div className="text-[11px] font-medium mb-1" style={{ color: "#9ca3af" }}>{s.label}</div>
+            <div className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-black tracking-tight leading-tight">
-            Temukan Properti Impian & Investasi Terbaik
-          </h2>
-          <p className="text-black text-xs sm:text-sm">
-            Koleksi eksklusif rumah, villa, ruko, dan tanah terverifikasi dengan lokasi presisi (Kecamatan, Kabupaten, Kode Pos) & legalitas resmi.
-          </p>
-        </div>
+        ))}
       </div>
 
-      {/* Filter Bar */}
-      <div className="bg-white border border-black p-4 space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-          {/* Search Input */}
-          <div className="relative lg:col-span-2">
+      {/* ── Filter Bar ───────────────────────────────────────────────── */}
+      <div
+        className="rounded-2xl border p-4 space-y-3"
+        style={{ backgroundColor: "#ffffff", borderColor: "#ebebeb" }}
+      >
+        <div className="flex flex-col sm:flex-row gap-2">
+          {/* Search */}
+          <div className="relative flex-1">
+            <svg
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
             <input
               type="text"
-              placeholder="Cari lokasi spesifik (contoh: Kuta Utara, Badung, Denpasar, alamat)..."
+              placeholder="Cari lokasi, alamat, kode properti..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 bg-white border border-black text-sm text-black placeholder-gray-500 focus:outline-none"
+              className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border focus:outline-none focus:ring-1 focus:ring-gray-300 transition"
+              style={{ borderColor: "#ebebeb", backgroundColor: "#f9f9f9", color: "#111" }}
             />
           </div>
 
-          {/* Jenis Dropdown */}
-          <div>
+          {/* Dropdowns */}
+          {([
+            { value: selectedJenis,    setter: setSelectedJenis,    options: [["ALL","Semua Jenis"],["RUMAH","Rumah"],["VILLA","Villa"],["RUKO","Ruko"],["TANAH","Tanah"]] },
+            { value: selectedSewaJual, setter: setSelectedSewaJual, options: [["ALL","Jual / Sewa"],["JUAL","Dijual"],["SEWA","Disewakan"]] },
+            { value: selectedStatus,   setter: setSelectedStatus,   options: [["ALL","Semua Status"],["AVAILABLE","Available"],["BOOKING","Booking"],["SOLD","Sold"]] },
+          ] as const).map((f, i) => (
             <select
-              value={selectedJenis}
-              onChange={(e) => setSelectedJenis(e.target.value)}
-              className="w-full px-3 py-2 bg-white border border-black text-sm text-black focus:outline-none"
+              key={i}
+              value={f.value}
+              onChange={(e) => (f.setter as any)(e.target.value)}
+              className="px-3 py-2 text-sm rounded-xl border focus:outline-none focus:ring-1 focus:ring-gray-300 transition"
+              style={{ borderColor: "#ebebeb", backgroundColor: "#f9f9f9", color: "#111" }}
             >
-              <option value="ALL">Semua Jenis Properti</option>
-              <option value="RUMAH">Rumah</option>
-              <option value="VILLA">Villa</option>
-              <option value="RUKO">Ruko</option>
-              <option value="TANAH">Tanah</option>
+              {(f.options as [string, string][]).map(([v, l]) => (
+                <option key={v} value={v}>{l}</option>
+              ))}
             </select>
-          </div>
-
-          {/* Transaksi (Jual / Sewa) */}
-          <div>
-            <select
-              value={selectedSewaJual}
-              onChange={(e) => setSelectedSewaJual(e.target.value)}
-              className="w-full px-3 py-2 bg-white border border-black text-sm text-black focus:outline-none"
-            >
-              <option value="ALL">Sewa / Jual (Semua)</option>
-              <option value="JUAL">Dijual Only</option>
-              <option value="SEWA">Disewakan Only</option>
-            </select>
-          </div>
-
-          {/* Status Dropdown */}
-          <div>
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="w-full px-3 py-2 bg-white border border-black text-sm text-black focus:outline-none"
-            >
-              <option value="ALL">Semua Status Unit</option>
-              <option value="AVAILABLE">Tersedia (Available)</option>
-              <option value="BOOKING">Dalam Booking</option>
-              <option value="SOLD">Terjual (Sold)</option>
-            </select>
-          </div>
+          ))}
         </div>
 
-        {/* Results Counter */}
-        <div className="flex items-center justify-between text-xs text-black border-t border-black pt-3">
-
-          <div>
-            Menampilkan <span className="font-bold">{filteredListings.length}</span> dari {listings.length} unit properti
-          </div>
-          {(searchTerm || selectedJenis !== "ALL" || selectedStatus !== "ALL" || selectedSewaJual !== "ALL") && (
+        {/* Result Counter + Reset */}
+        <div className="flex items-center justify-between text-xs" style={{ color: "#9ca3af" }}>
+          <span>
+            Menampilkan <span className="font-semibold" style={{ color: "#111" }}>{filteredListings.length}</span> dari {listings.length} properti
+          </span>
+          {hasFilter && (
             <button
-              onClick={() => {
-                setSearchTerm("");
-                setSelectedJenis("ALL");
-                setSelectedStatus("ALL");
-                setSelectedSewaJual("ALL");
-              }}
-              className="text-black hover:underline font-bold"
+              onClick={resetFilters}
+              className="text-xs font-semibold hover:underline transition"
+              style={{ color: "#111" }}
             >
-              [X] Reset Filter
+              Reset filter
             </button>
           )}
         </div>
-
       </div>
 
-      {/* Property Cards Grid */}
+      {/* ── Property Cards Grid ──────────────────────────────────────── */}
       {filteredListings.length === 0 ? (
-        <div className="bg-white border border-black p-12 text-center space-y-3">
-          <h3 className="text-lg font-bold text-black">Tidak Ada Properti yang Sesuai</h3>
-          <p className="text-black text-xs max-w-sm mx-auto">
-            Coba ubah kata kunci pencarian wilayah/alamat atau reset filter untuk melihat properti lainnya.
+        <div
+          className="rounded-2xl border p-12 text-center space-y-2"
+          style={{ backgroundColor: "#ffffff", borderColor: "#ebebeb" }}
+        >
+          <div className="text-4xl">🏘️</div>
+          <h3 className="font-bold text-base" style={{ color: "#111" }}>Tidak Ada Properti yang Sesuai</h3>
+          <p className="text-sm max-w-sm mx-auto" style={{ color: "#9ca3af" }}>
+            Coba ubah kata kunci atau reset filter untuk melihat properti lainnya.
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredListings.map((item) => {
-            const photos = Array.isArray(item.link_foto) && item.link_foto.length > 0
+            const photos     = Array.isArray(item.link_foto) && item.link_foto.length > 0
               ? item.link_foto
               : ["https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80"];
-
-            const currentIdx = activeImageIndex[item.id] || 0;
+            const currentIdx  = activeImageIndex[item.id] || 0;
+            const cardBg      = PASTEL_BG[item.jenis]     || "#f9f9f9";
+            const accentColor = PASTEL_ACCENT[item.jenis] || "#111111";
+            const statusStyle = STATUS_STYLE[item.status] || STATUS_STYLE.AVAILABLE;
 
             return (
               <div
                 key={item.id}
                 onClick={() => setActiveListingModal(item)}
-                className="group cursor-pointer bg-white border border-black flex flex-col hover:bg-gray-50 transition"
+                className="group cursor-pointer rounded-2xl border overflow-hidden flex flex-col transition-shadow hover:shadow-md"
+                style={{ backgroundColor: "#ffffff", borderColor: "#ebebeb" }}
               >
-                {/* Photo Carousel Area */}
-                <div className="relative h-56 w-full overflow-hidden bg-white border-b border-black">
+                {/* ── Photo Area ───────────────────────────────────────── */}
+                <div className="relative h-52 w-full overflow-hidden" style={{ backgroundColor: cardBg }}>
                   <img
                     src={photos[currentIdx]}
                     alt={item.kode}
-                    className="w-full h-full object-cover grayscale"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                   />
 
-                  {/* Top Badges Overlay */}
-                  <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2 pointer-events-none">
-                    <span className="flex items-center gap-1.5 px-2 py-0.5 text-xs font-bold bg-white text-black border border-black">
-                      {item.jenis}
-                    </span>
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
 
+                  {/* Status Badge — top right */}
+                  <div className="absolute top-3 right-3">
                     <span
-                      className={`px-2 py-0.5 text-xs font-bold border border-black ${
-                        item.status === "AVAILABLE"
-                          ? "bg-white text-black"
-                          : item.status === "BOOKING"
-                          ? "bg-gray-200 text-black"
-                          : "bg-black text-white"
-                      }`}
+                      className="text-[10px] font-bold px-2 py-1 rounded-full"
+                      style={{ backgroundColor: statusStyle.bg, color: statusStyle.color }}
                     >
-                      {item.status}
+                      {statusStyle.label}
                     </span>
                   </div>
 
-                  {/* Transaksi Badge Bottom Left */}
-                  <div className="absolute bottom-3 left-3 flex gap-2">
-                    <span className="px-2 py-0.5 text-[10px] font-bold uppercase bg-white text-black border border-black">
+                  {/* Type Badge — top left */}
+                  <div className="absolute top-3 left-3">
+                    <span
+                      className="text-[10px] font-bold px-2 py-1 rounded-full"
+                      style={{ backgroundColor: "rgba(255,255,255,0.92)", color: accentColor }}
+                    >
+                      {item.jenis}
+                    </span>
+                  </div>
+
+                  {/* Sewa/Jual + Sertifikat — bottom left */}
+                  <div className="absolute bottom-3 left-3 flex gap-1.5">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white/90 text-gray-700">
                       {item.sewa_jual || "JUAL"}
                     </span>
                     {item.sertifikat && (
-                      <span className="px-2 py-0.5 text-[10px] font-bold bg-white text-black border border-black">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white/90 text-gray-700">
                         {item.sertifikat}
                       </span>
                     )}
                   </div>
 
-                  {/* Photo Navigation Arrows if > 1 photo */}
+                  {/* Photo Navigation */}
                   {photos.length > 1 && (
                     <>
                       <button
                         onClick={(e) => handlePrevImage(item.id, photos.length, e)}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 bg-white text-black border border-black flex items-center justify-center hover:bg-gray-200"
+                        className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/90 shadow flex items-center justify-center text-gray-600 hover:bg-white transition text-base leading-none"
                       >
                         ‹
                       </button>
                       <button
                         onClick={(e) => handleNextImage(item.id, photos.length, e)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 bg-white text-black border border-black flex items-center justify-center hover:bg-gray-200"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/90 shadow flex items-center justify-center text-gray-600 hover:bg-white transition text-base leading-none"
                       >
                         ›
                       </button>
-                      <div className="absolute bottom-2 right-3 px-2 py-0.5 bg-white text-black border border-black text-[10px] font-bold">
+                      <span className="absolute bottom-3 right-3 text-[10px] bg-black/50 text-white px-1.5 py-0.5 rounded-md">
                         {currentIdx + 1}/{photos.length}
-                      </div>
+                      </span>
                     </>
                   )}
                 </div>
 
-                {/* Card Content Body */}
-                <div className="p-5 space-y-3 flex-1 flex flex-col justify-between">
-                  <div>
-                    {/* Price and Code */}
-                    <div className="flex items-baseline justify-between">
-                      <div className="text-xl font-bold text-black">
+                {/* ── Card Body ─────────────────────────────────────────── */}
+                <div className="p-4 flex-1 flex flex-col gap-3">
+
+                  {/* Price Row */}
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="text-[11px] font-medium mb-0.5" style={{ color: "#9ca3af" }}>
+                        Harga {item.sewa_jual === "SEWA" ? "Sewa" : "Penawaran"}
+                      </div>
+                      <div className="text-[22px] font-bold leading-tight" style={{ color: "#111111" }}>
                         {formatPrice(item.harga)}
                       </div>
-                      <div className="text-xs font-mono text-black bg-white px-2 py-0.5 border border-black font-bold">
-                        {item.kode}
-                      </div>
                     </div>
+                    <span
+                      className="text-[10px] font-mono font-bold px-2 py-1 rounded-lg shrink-0 mt-1"
+                      style={{ backgroundColor: "#f5f5f5", color: "#6b7280" }}
+                    >
+                      {item.kode}
+                    </span>
+                  </div>
 
-                    {/* Location Area & Full Detailed Address */}
-                    <div className="mt-3 space-y-1 bg-white p-2.5 border border-black text-xs text-black">
-                      <div className="font-bold flex items-center gap-1 text-black">
-                        📍 <span>{item.lokasi_area}</span>
-                      </div>
-                      {item.alamat_lengkap && (
-                        <div className="text-[11px] text-gray-700 leading-tight border-t border-black/20 pt-1 mt-1 line-clamp-2">
-                          <span className="font-semibold text-black">Alamat:</span> {item.alamat_lengkap}
-                        </div>
-                      )}
-                    </div>
+                  {/* Location */}
+                  <div className="flex items-start gap-1.5 text-[12px]" style={{ color: "#6b7280" }}>
+                    <svg className="shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <span className="line-clamp-1 font-medium" style={{ color: "#374151" }}>
+                      {item.lokasi_area}
+                    </span>
+                  </div>
 
-                    {/* Specs Row */}
-                    <div className="grid grid-cols-3 gap-2 py-3 border-y border-black my-3 text-xs text-black">
-                      <div className="flex items-center gap-1">
-                        <span>LT: {item.luas_tanah || 0}m²</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <span>LB: {item.luas_bangunan || 0}m²</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <span>{item.kamar_tidur || 0} KT</span>
-                      </div>
-                    </div>
-
-                    {/* Notes Snippet */}
-                    {item.catatan && (
-                      <p className="text-xs text-black line-clamp-2 italic">
-                        "{item.catatan}"
-                      </p>
+                  {/* Specs Row */}
+                  <div
+                    className="flex items-center gap-3 text-[11px] font-medium py-2.5 px-3 rounded-xl"
+                    style={{ backgroundColor: "#f9f9f9", color: "#6b7280" }}
+                  >
+                    <span>LT {item.luas_tanah || 0}m²</span>
+                    <span style={{ color: "#d1d5db" }}>·</span>
+                    <span>LB {item.luas_bangunan || 0}m²</span>
+                    <span style={{ color: "#d1d5db" }}>·</span>
+                    <span>{item.kamar_tidur || 0} KT</span>
+                    {item.kamar_mandi && (
+                      <>
+                        <span style={{ color: "#d1d5db" }}>·</span>
+                        <span>{item.kamar_mandi} KM</span>
+                      </>
                     )}
                   </div>
 
+                  {/* Notes snippet */}
+                  {item.catatan && (
+                    <p className="text-[11px] italic line-clamp-2" style={{ color: "#9ca3af" }}>
+                      &ldquo;{item.catatan}&rdquo;
+                    </p>
+                  )}
 
-                  {/* Card Footer Actions */}
-                  <div className="pt-3 flex items-center justify-between border-t border-black">
+                  {/* Footer Actions */}
+                  <div className="flex items-center justify-between pt-1 mt-auto">
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveListingModal(item);
-                      }}
-                      className="text-xs font-bold text-black hover:underline flex items-center gap-1"
+                      onClick={(e) => { e.stopPropagation(); setActiveListingModal(item); }}
+                      className="text-[12px] font-semibold transition-colors hover:opacity-70"
+                      style={{ color: "#111" }}
                     >
-                      Lihat Detail & Map
+                      Lihat Detail →
                     </button>
-
                     {onOpenMatchModal && (
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onOpenMatchModal(item);
-                        }}
-                        className="px-2.5 py-1 text-[11px] font-bold bg-white text-black border border-black hover:bg-gray-100 flex items-center gap-1"
+                        onClick={(e) => { e.stopPropagation(); onOpenMatchModal(item); }}
+                        className="text-[11px] font-bold px-3 py-1.5 rounded-lg transition-colors"
+                        style={{ backgroundColor: "#111", color: "#fff" }}
                       >
-                        Match Client
+                        AI Match
                       </button>
                     )}
                   </div>
@@ -322,7 +346,7 @@ export default function MarketplaceView({ listings, onOpenMatchModal }: Marketpl
         </div>
       )}
 
-      {/* Property Detail Modal */}
+      {/* ── Property Detail Modal ─────────────────────────────────────── */}
       {activeListingModal && (
         <PropertyDetailModal
           listing={activeListingModal}

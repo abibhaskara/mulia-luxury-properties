@@ -62,48 +62,48 @@ export default function BuyerFormModal({ buyer, onClose, onSuccess }: BuyerFormM
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/90 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-xl bg-white border border-black overflow-hidden my-8 flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" style={{ backgroundColor: "rgba(17,17,17,0.5)", backdropFilter: "blur(4px)" }}>
+      <div className="relative w-full max-w-xl overflow-hidden my-8 flex flex-col rounded-2xl border" style={{ backgroundColor: "#ffffff", borderColor: "#ebebeb" }}>
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-black bg-white">
-          <h3 className="text-lg font-bold text-black">
+        <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: "#ebebeb" }}>
+          <h3 className="text-base font-bold" style={{ color: "#111" }}>
             {buyer ? "Edit Data Buyer Lead" : "Tambah Buyer / Calon Pembeli Baru"}
           </h3>
           <button
             onClick={onClose}
-            className="text-black font-bold hover:underline"
+            className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors hover:bg-gray-100 text-gray-400 hover:text-gray-700"
           >
-            [X]
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs text-black">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-sm">
           {errorMessage && (
-            <div className="p-3 bg-white border border-black text-black font-bold">
+            <div className="p-3 rounded-xl text-sm font-medium" style={{ backgroundColor: "#fef2f2", color: "#ef4444", border: "1px solid #fee2e2" }}>
               {errorMessage}
             </div>
           )}
 
           <div>
-            <label className="block text-black mb-1 font-bold">Nama Klien / Buyer *</label>
+            <label className="block text-xs font-semibold mb-1.5" style={{ color: "#374151" }} data-label="">Nama Klien / Buyer *</label>
             <input
               type="text"
               required
               value={formData.nama_klien}
               onChange={(e) => setFormData({ ...formData, nama_klien: e.target.value })}
               placeholder="Siti Rahmawati"
-              className="w-full px-3 py-2 bg-white border border-black text-black focus:outline-none"
+              className="w-full px-3 py-2 rounded-xl border focus:outline-none focus:ring-1 focus:ring-gray-200" style={{ borderColor: "#ebebeb", backgroundColor: "#f9f9f9", color: "#111" }} data-input=""
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-black mb-1 font-bold">Jenis Dicari</label>
+              <label className="block text-xs font-semibold mb-1.5" style={{ color: "#374151" }} data-label="">Jenis Dicari</label>
               <select
                 value={formData.jenis_dicari}
                 onChange={(e) => setFormData({ ...formData, jenis_dicari: e.target.value })}
-                className="w-full px-3 py-2 bg-white border border-black text-black focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl border focus:outline-none focus:ring-1 focus:ring-gray-200" style={{ borderColor: "#ebebeb", backgroundColor: "#f9f9f9", color: "#111" }} data-input=""
               >
                 <option value="RUMAH">Rumah</option>
                 <option value="VILLA">Villa</option>
@@ -114,11 +114,11 @@ export default function BuyerFormModal({ buyer, onClose, onSuccess }: BuyerFormM
             </div>
 
             <div>
-              <label className="block text-black mb-1 font-bold">Status Pipeline Lead</label>
+              <label className="block text-xs font-semibold mb-1.5" style={{ color: "#374151" }} data-label="">Status Pipeline Lead</label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                className="w-full px-3 py-2 bg-white border border-black text-black focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl border focus:outline-none focus:ring-1 focus:ring-gray-200" style={{ borderColor: "#ebebeb", backgroundColor: "#f9f9f9", color: "#111" }} data-input=""
               >
                 <option value="NEW">NEW (Prospek Baru)</option>
                 <option value="CONTACTED">CONTACTED (Sudah Dikontak)</option>
@@ -130,34 +130,34 @@ export default function BuyerFormModal({ buyer, onClose, onSuccess }: BuyerFormM
           </div>
 
           <div>
-            <label className="block text-black mb-1 font-bold">Lokasi Area Dicari</label>
+            <label className="block text-xs font-semibold mb-1.5" style={{ color: "#374151" }} data-label="">Lokasi Area Dicari</label>
             <input
               type="text"
               value={formData.lokasi_dicari}
               onChange={(e) => setFormData({ ...formData, lokasi_dicari: e.target.value })}
               placeholder="Canggu, Bali atau Jakarta Selatan"
-              className="w-full px-3 py-2 bg-white border border-black text-black focus:outline-none"
+              className="w-full px-3 py-2 rounded-xl border focus:outline-none focus:ring-1 focus:ring-gray-200" style={{ borderColor: "#ebebeb", backgroundColor: "#f9f9f9", color: "#111" }} data-input=""
             />
           </div>
 
           {/* Budget Range */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-black mb-1 font-bold">Budget Minimal (Rp)</label>
+              <label className="block text-xs font-semibold mb-1.5" style={{ color: "#374151" }} data-label="">Budget Minimal (Rp)</label>
               <input
                 type="number"
                 value={formData.budget_min}
                 onChange={(e) => setFormData({ ...formData, budget_min: parseFloat(e.target.value) || 0 })}
-                className="w-full px-3 py-2 bg-white border border-black text-black focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl border focus:outline-none focus:ring-1 focus:ring-gray-200" style={{ borderColor: "#ebebeb", backgroundColor: "#f9f9f9", color: "#111" }} data-input=""
               />
             </div>
             <div>
-              <label className="block text-black mb-1 font-bold">Budget Maksimal (Rp)</label>
+              <label className="block text-xs font-semibold mb-1.5" style={{ color: "#374151" }} data-label="">Budget Maksimal (Rp)</label>
               <input
                 type="number"
                 value={formData.budget_max}
                 onChange={(e) => setFormData({ ...formData, budget_max: parseFloat(e.target.value) || 0 })}
-                className="w-full px-3 py-2 bg-white border border-black text-black focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl border focus:outline-none focus:ring-1 focus:ring-gray-200" style={{ borderColor: "#ebebeb", backgroundColor: "#f9f9f9", color: "#111" }} data-input=""
               />
             </div>
           </div>
@@ -165,57 +165,59 @@ export default function BuyerFormModal({ buyer, onClose, onSuccess }: BuyerFormM
           {/* Specs criteria */}
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-black mb-1 font-bold">LT Min (m²)</label>
+              <label className="block text-xs font-semibold mb-1.5" style={{ color: "#374151" }} data-label="">LT Min (m²)</label>
               <input
                 type="number"
                 value={formData.lt_min}
                 onChange={(e) => setFormData({ ...formData, lt_min: parseInt(e.target.value) || 0 })}
-                className="w-full px-3 py-2 bg-white border border-black text-black focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl border focus:outline-none focus:ring-1 focus:ring-gray-200" style={{ borderColor: "#ebebeb", backgroundColor: "#f9f9f9", color: "#111" }} data-input=""
               />
             </div>
             <div>
-              <label className="block text-black mb-1 font-bold">LB Min (m²)</label>
+              <label className="block text-xs font-semibold mb-1.5" style={{ color: "#374151" }} data-label="">LB Min (m²)</label>
               <input
                 type="number"
                 value={formData.lb_min}
                 onChange={(e) => setFormData({ ...formData, lb_min: parseInt(e.target.value) || 0 })}
-                className="w-full px-3 py-2 bg-white border border-black text-black focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl border focus:outline-none focus:ring-1 focus:ring-gray-200" style={{ borderColor: "#ebebeb", backgroundColor: "#f9f9f9", color: "#111" }} data-input=""
               />
             </div>
             <div>
-              <label className="block text-black mb-1 font-bold">KT Min</label>
+              <label className="block text-xs font-semibold mb-1.5" style={{ color: "#374151" }} data-label="">KT Min</label>
               <input
                 type="number"
                 value={formData.kt_min}
                 onChange={(e) => setFormData({ ...formData, kt_min: parseInt(e.target.value) || 0 })}
-                className="w-full px-3 py-2 bg-white border border-black text-black focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl border focus:outline-none focus:ring-1 focus:ring-gray-200" style={{ borderColor: "#ebebeb", backgroundColor: "#f9f9f9", color: "#111" }} data-input=""
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-black mb-1 font-bold">Catatan Kebutuhan Khusus Klien</label>
+            <label className="block text-xs font-semibold mb-1.5" style={{ color: "#374151" }} data-label="">Catatan Kebutuhan Khusus Klien</label>
             <textarea
               rows={3}
               value={formData.catatan}
               onChange={(e) => setFormData({ ...formData, catatan: e.target.value })}
               placeholder="Ingin private pool, dekat pantai, garasi 3 mobil, butuh secepatnya..."
-              className="w-full px-3 py-2 bg-white border border-black text-black focus:outline-none"
+              className="w-full px-3 py-2 rounded-xl border focus:outline-none focus:ring-1 focus:ring-gray-200" style={{ borderColor: "#ebebeb", backgroundColor: "#f9f9f9", color: "#111" }} data-input=""
             />
           </div>
 
-          <div className="pt-4 border-t border-black flex items-center justify-end gap-3">
+          <div className="pt-4 border-t flex items-center justify-end gap-2" style={{ borderColor: "#ebebeb" }}>
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-white text-black border border-black hover:bg-gray-100 font-bold"
+              className="px-4 py-2 rounded-xl text-sm font-semibold transition-colors hover:bg-gray-100"
+              style={{ color: "#6b7280" }}
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2 bg-black text-white font-bold disabled:opacity-50"
+              className="px-5 py-2 rounded-xl text-sm font-bold transition-opacity disabled:opacity-50"
+              style={{ backgroundColor: "#111", color: "#fff" }}
             >
               {isSubmitting ? "Menyimpan..." : buyer ? "Simpan Perubahan" : "Tambah Buyer Lead"}
             </button>

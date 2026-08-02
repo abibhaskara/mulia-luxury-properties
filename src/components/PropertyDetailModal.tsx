@@ -28,28 +28,31 @@ export default function PropertyDetailModal({ listing, onClose }: PropertyDetail
   )}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/90 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-4xl bg-white border border-black overflow-hidden my-8 max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" style={{ backgroundColor: "rgba(17,17,17,0.5)", backdropFilter: "blur(4px)" }}>
+      <div className="relative w-full max-w-4xl overflow-hidden my-8 max-h-[90vh] flex flex-col rounded-2xl border" style={{ backgroundColor: "#ffffff", borderColor: "#ebebeb" }}>
         {/* Header Bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-black bg-white">
+        <div className="flex items-center justify-between px-6 py-4 border-b shrink-0" style={{ borderColor: "#ebebeb" }}>
           <div className="flex items-center gap-3">
-            <span className="px-3 py-1 text-xs font-bold bg-white text-black border border-black">
+            <span
+              className="px-2.5 py-1 text-xs font-bold rounded-lg"
+              style={{ backgroundColor: "#f5f5f5", color: "#6b7280" }}
+            >
               {listing.kode}
             </span>
-            <h3 className="text-lg font-bold text-black">
-              {listing.jenis} - {listing.lokasi_area}
+            <h3 className="text-base font-bold" style={{ color: "#111" }}>
+              {listing.jenis} · {listing.lokasi_area}
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="text-black font-bold hover:underline"
+            className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors hover:bg-gray-100 text-gray-400 hover:text-gray-700"
           >
-            [X]
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
           </button>
         </div>
 
         {/* Modal Scrollable Body */}
-        <div className="p-6 overflow-y-auto space-y-6 flex-1 text-black">
+        <div className="p-6 overflow-y-auto space-y-6 flex-1">
           {/* Main Photo Gallery */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="md:col-span-2 h-72 bg-white border border-black">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Listing } from "@/db/schema";
 import LocationSearchBar, { LocationSearchResult } from "./LocationSearchBar";
 
@@ -25,7 +25,7 @@ export default function MapComponent({
 }: MapComponentProps) {
   const [mounted, setMounted] = useState(false);
   const [L, setL] = useState<any>(null);
-  const [mapInstance, setMapInstance] = useState<any>(null);
+  const mapInstanceRef = useRef<any>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -66,7 +66,7 @@ export default function MapComponent({
 
     const map = L.map("leaflet-map-container").setView(initialCenter, zoom);
     (mapElement as any)._leaflet_map = map;
-    setMapInstance(map);
+    mapInstanceRef.current = map;
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -128,8 +128,8 @@ export default function MapComponent({
   }, [mounted, L, listings, selectedListingId, center, zoom, onSelectListing]);
 
   const handleSelectLocation = (loc: LocationSearchResult) => {
-    if (mapInstance) {
-      mapInstance.flyTo([loc.latitude, loc.longitude], 14);
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.flyTo([loc.latitude, loc.longitude], 14);
     }
   };
 

@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Harsalab Studio — Property CRM & Buyer Matching Web App",
+  title: "Mulia Luxury Property — CRM & AI Buyer Matching",
   description:
-    "System CRM Properti serverless modern untuk Harsalab Studio. Manajemen katalog rumah, villa, ruko, tanah, serta AI Vector Matching buyer lead.",
-  keywords: ["Property CRM", "Harsalab Studio", "Real Estate CRM", "Gemini AI Property Match", "Next.js 14", "Drizzle ORM"],
+    "Sistem CRM Properti Serverless Modern untuk Mulia Luxury Property. Manajemen katalog rumah, villa, ruko, tanah, serta AI Vector Matching buyer lead.",
+  keywords: ["Mulia Luxury Property", "Property CRM", "Real Estate CRM", "Gemini AI Property Match", "Next.js"],
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
 };
 
 export default function RootLayout({
@@ -14,14 +15,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id">
+    <html lang="id" className="h-full">
       <head>
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css"
         />
       </head>
-      <body className="antialiased bg-white text-black">
+      <body className="h-full antialiased">
         {children}
       </body>
     </html>

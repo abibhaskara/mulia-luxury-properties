@@ -14,7 +14,7 @@ interface PropertyFormModalProps {
 export default function PropertyFormModal({ listing, onClose, onSuccess }: PropertyFormModalProps) {
   const [formData, setFormData] = useState({
     id: listing?.id || "",
-    kode: listing?.kode || `HS-${Math.floor(100 + Math.random() * 900)}`,
+    kode: listing?.kode || `HS-RMH-${Math.floor(100 + Math.random() * 900)}`,
     status: listing?.status || "AVAILABLE",
     jenis: listing?.jenis || "RUMAH",
     lokasi_area: listing?.lokasi_area || "",
@@ -45,6 +45,7 @@ export default function PropertyFormModal({ listing, onClose, onSuccess }: Prope
 
   const [newPhotoInput, setNewPhotoInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleAddPhoto = () => {
@@ -106,53 +107,78 @@ export default function PropertyFormModal({ listing, onClose, onSuccess }: Prope
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/90 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-3xl bg-white border border-black overflow-hidden my-8 max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" style={{ backgroundColor: "rgba(17,17,17,0.5)", backdropFilter: "blur(4px)" }}>
+      <div className="relative w-full max-w-3xl overflow-hidden my-8 max-h-[90vh] flex flex-col rounded-2xl border" style={{ backgroundColor: "#ffffff", borderColor: "#ebebeb" }}>
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-black bg-white">
-          <h3 className="text-lg font-bold text-black">
+        <div className="flex items-center justify-between px-6 py-4 border-b shrink-0" style={{ borderColor: "#ebebeb" }}>
+          <h3 className="text-base font-bold" style={{ color: "#111" }}>
             {listing ? "Edit Properti" : "Tambah Listing Properti Baru"}
           </h3>
           <button
             onClick={onClose}
-            className="text-black font-bold hover:underline"
+            className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors hover:bg-gray-100 text-gray-400 hover:text-gray-700"
           >
-            [X]
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-6 flex-1 text-black text-xs">
+        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-6 flex-1 text-sm">
           {errorMessage && (
-            <div className="p-3 bg-white border border-black text-black text-xs font-bold">
+            <div className="p-3 rounded-xl text-sm font-medium" style={{ backgroundColor: "#fef2f2", color: "#ef4444", border: "1px solid #fee2e2" }}>
               {errorMessage}
             </div>
           )}
 
           {/* Basic Property Info */}
           <div className="space-y-3">
-            <h4 className="font-bold text-black uppercase tracking-wider text-xs border-b border-black pb-1">
+            <h4 className="font-bold uppercase tracking-wider text-[11px] pb-2 border-b" style={{ color: "#9ca3af", borderColor: "#ebebeb" }}>
               1. Identitas & Informasi Utama
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label className="block text-black font-bold mb-1">Kode Listing *</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-semibold" style={{ color: "#374151" }}>
+                    Kode Listing <span className="text-[10px] text-gray-400 font-normal">(Otomatis)</span> *
+                  </label>
+                  {!listing && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const typePrefix = formData.jenis === "RUMAH" ? "RMH" : formData.jenis === "VILLA" ? "VIL" : formData.jenis === "RUKO" ? "RKO" : "TNH";
+                        const randomNum = Math.floor(100 + Math.random() * 900);
+                        setFormData({ ...formData, kode: `HS-${typePrefix}-${randomNum}` });
+                      }}
+                      className="text-[10px] font-semibold text-blue-600 hover:underline"
+                    >
+                      ↻ Acak Ulang
+                    </button>
+                  )}
+                </div>
                 <input
                   type="text"
                   required
                   value={formData.kode}
-                  onChange={(e) => setFormData({ ...formData, kode: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, kode: e.target.value.toUpperCase() })}
                   placeholder="Contoh: HS-RMH-008"
-                  className="w-full px-3 py-2 bg-white border border-black text-black focus:outline-none"
+                  className="w-full px-3 py-2 rounded-xl border focus:outline-none focus:ring-1 focus:ring-gray-200 font-mono font-bold"
+                  style={{ borderColor: "#ebebeb", backgroundColor: "#f9f9f9", color: "#111" }}
                 />
               </div>
 
               <div>
-                <label className="block text-black font-bold mb-1">Jenis Properti</label>
+                <label className="block text-xs font-semibold mb-1" style={{ color: "#374151" }}>Jenis Properti</label>
                 <select
                   value={formData.jenis}
-                  onChange={(e) => setFormData({ ...formData, jenis: e.target.value })}
-                  className="w-full px-3 py-2 bg-white border border-black text-black focus:outline-none"
+                  onChange={(e) => {
+                    const newJenis = e.target.value;
+                    const typePrefix = newJenis === "RUMAH" ? "RMH" : newJenis === "VILLA" ? "VIL" : newJenis === "RUKO" ? "RKO" : "TNH";
+                    const currentNum = formData.kode.split("-")[2] || Math.floor(100 + Math.random() * 900);
+                    const newKode = !listing ? `HS-${typePrefix}-${currentNum}` : formData.kode;
+                    setFormData({ ...formData, jenis: newJenis, kode: newKode });
+                  }}
+                  className="w-full px-3 py-2 rounded-xl border focus:outline-none focus:ring-1 focus:ring-gray-200"
+                  style={{ borderColor: "#ebebeb", backgroundColor: "#f9f9f9", color: "#111" }}
                 >
                   <option value="RUMAH">Rumah</option>
                   <option value="VILLA">Villa</option>
@@ -443,54 +469,129 @@ export default function PropertyFormModal({ listing, onClose, onSuccess }: Prope
               />
             </div>
 
-            {/* Photo List Adder */}
-            <div className="space-y-2">
-              <label className="block text-black font-bold">Link Foto Properti (Unsplash / Cloudinary / URL)</label>
-              <div className="flex gap-2">
-                <input
-                  type="url"
-                  value={newPhotoInput}
-                  onChange={(e) => setNewPhotoInput(e.target.value)}
-                  placeholder="https://images.unsplash.com/photo-..."
-                  className="flex-1 px-3 py-2 bg-white border border-black text-black focus:outline-none"
-                />
-                <button
-                  type="button"
-                  onClick={handleAddPhoto}
-                  className="px-3 py-2 bg-white text-black border border-black hover:bg-gray-100 font-bold text-xs"
-                >
-                  Tambah
-                </button>
+            {/* Photo Upload & URL Adder */}
+            <div className="space-y-3">
+              <label className="block text-xs font-semibold" style={{ color: "#374151" }}>
+                Foto Properti <span className="text-[10px] text-gray-400 font-normal">(Upload File atau Paste URL)</span>
+              </label>
+
+              {/* Upload Dropzone / Button & URL Input Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Option 1: File Upload Button */}
+                <div className="relative border-2 border-dashed rounded-xl p-3 text-center flex flex-col items-center justify-center hover:bg-gray-50 transition cursor-pointer" style={{ borderColor: "#d1d5db", backgroundColor: "#f9f9f9" }}>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={async (e) => {
+                      const files = e.target.files;
+                      if (!files || files.length === 0) return;
+                      setIsUploading(true);
+
+                      const uploadPromises = Array.from(files).map(async (file) => {
+                        try {
+                          const body = new FormData();
+                          body.append("file", file);
+                          const res = await fetch("/api/upload", { method: "POST", body });
+                          const json = await res.json();
+                          if (json.success && json.url) {
+                            return json.url;
+                          }
+                        } catch (err) {
+                          console.warn("Cloudinary upload fallback to Data URL", err);
+                        }
+                        // Fallback to Data URL if Cloudinary is not yet configured
+                        return new Promise<string>((resolve) => {
+                          const reader = new FileReader();
+                          reader.onload = () => resolve(reader.result as string);
+                          reader.readAsDataURL(file);
+                        });
+                      });
+
+                      try {
+                        const uploadedUrls = await Promise.all(uploadPromises);
+                        setPhotosList((prev) => [...prev, ...uploadedUrls]);
+                      } catch {
+                        alert("Gagal mengunggah foto.");
+                      } finally {
+                        setIsUploading(false);
+                        e.target.value = "";
+                      }
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                  />
+                  <div className="flex items-center gap-2 text-xs font-bold text-gray-700">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    <span>{isUploading ? "Mengunggah ke Cloudinary..." : "Upload Gambar ke Cloudinary"}</span>
+                  </div>
+                  <span className="text-[10px] text-gray-400 mt-1">PNG, JPG, WEBP (Otomatis masuk folder harsalab-properties)</span>
+                </div>
+
+                {/* Option 2: URL Input */}
+                <div className="flex flex-col justify-center space-y-1.5 p-3 rounded-xl border" style={{ borderColor: "#ebebeb", backgroundColor: "#ffffff" }}>
+                  <span className="text-[11px] font-semibold text-gray-600">Atau Tambah via Link URL (Unsplash / Cloudinary):</span>
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      value={newPhotoInput}
+                      onChange={(e) => setNewPhotoInput(e.target.value)}
+                      placeholder="https://res.cloudinary.com/..."
+                      className="flex-1 px-3 py-1.5 rounded-lg border text-xs focus:outline-none"
+                      style={{ borderColor: "#ebebeb", backgroundColor: "#f9f9f9", color: "#111" }}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddPhoto}
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold transition-colors"
+                      style={{ backgroundColor: "#111", color: "#fff" }}
+                    >
+                      + URL
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              {/* Photo Thumbnails */}
+              {/* Photo Thumbnails Gallery */}
               {photosList.length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {photosList.map((url, idx) => (
-                    <div key={idx} className="relative w-16 h-16 border border-black group bg-white">
-                      <img src={url} alt={`Photo ${idx}`} className="w-full h-full object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => handleRemovePhoto(idx)}
-                        className="absolute inset-0 bg-white/90 text-black font-bold text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
-                      >
-                        [X]
-                      </button>
-                    </div>
-                  ))}
+                <div className="space-y-1 pt-1">
+                  <span className="text-[11px] text-gray-400 font-medium">{photosList.length} Foto Terpasang:</span>
+                  <div className="flex flex-wrap gap-2.5">
+                    {photosList.map((url, idx) => {
+                      const isCloudinary = url.includes("cloudinary.com");
+                      const isDataUrl = url.startsWith("data:");
+                      return (
+                        <div key={idx} className="relative w-20 h-20 rounded-xl overflow-hidden border group bg-gray-100 shrink-0" style={{ borderColor: "#ebebeb" }}>
+                          <img src={url} alt={`Photo ${idx}`} className="w-full h-full object-cover" />
+                          <span className="absolute bottom-1 left-1 text-[8px] font-bold px-1 rounded bg-black/60 text-white uppercase">
+                            {isCloudinary ? "CLOUDINARY" : isDataUrl ? "FILE" : "URL"}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemovePhoto(idx)}
+                            className="absolute inset-0 bg-red-600/80 text-white font-bold text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
+                          >
+                            Hapus
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
 
             {/* Notes */}
             <div>
-              <label className="block text-black font-bold mb-1">Catatan Agen & Deskripsi Penjualan</label>
+              <label className="block text-xs font-semibold mb-1" style={{ color: "#374151" }}>Catatan Agen & Deskripsi Penjualan</label>
               <textarea
                 rows={3}
                 value={formData.catatan}
                 onChange={(e) => setFormData({ ...formData, catatan: e.target.value })}
                 placeholder="Fasilitas khusus, pemandangan, garasi, ROI sewa..."
-                className="w-full px-3 py-2 bg-white border border-black text-black focus:outline-none"
+                className="w-full px-3 py-2 rounded-xl border focus:outline-none focus:ring-1 focus:ring-gray-200"
+                style={{ borderColor: "#ebebeb", backgroundColor: "#f9f9f9", color: "#111" }}
               />
             </div>
           </div>
