@@ -55,7 +55,7 @@ export async function getEmbedding(textInput: string): Promise<number[]> {
 
   if (genAI) {
     try {
-      const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
+      const model = genAI.getGenerativeModel({ model: "embedding-001" });
       const result = await model.embedContent(textInput);
       if (result.embedding?.values) {
         return result.embedding.values;
@@ -64,6 +64,7 @@ export async function getEmbedding(textInput: string): Promise<number[]> {
       console.warn("Gemini embedding error, falling back to deterministic vector:", error);
     }
   }
+
 
   return generateDeterministicFallbackEmbedding(textInput);
 }

@@ -38,11 +38,14 @@ export default function MarketplaceView({ listings, onOpenMatchModal }: Marketpl
   };
 
   const filteredListings = listings.filter((item) => {
+    const q = searchTerm.toLowerCase().trim();
     const matchesSearch =
-      item.kode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.lokasi_area.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (item.alamat_lengkap && item.alamat_lengkap.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (item.catatan && item.catatan.toLowerCase().includes(searchTerm.toLowerCase()));
+      !q ||
+      item.kode.toLowerCase().includes(q) ||
+      item.lokasi_area.toLowerCase().includes(q) ||
+      (item.alamat_lengkap && item.alamat_lengkap.toLowerCase().includes(q)) ||
+      (item.catatan && item.catatan.toLowerCase().includes(q)) ||
+      (item.nama_pemilik && item.nama_pemilik.toLowerCase().includes(q));
 
     const matchesJenis = selectedJenis === "ALL" || item.jenis === selectedJenis;
     const matchesStatus = selectedStatus === "ALL" || item.status === selectedStatus;
@@ -52,14 +55,24 @@ export default function MarketplaceView({ listings, onOpenMatchModal }: Marketpl
     return matchesSearch && matchesJenis && matchesStatus && matchesSewaJual && matchesPrice;
   });
 
-
-
   const formatPrice = (price: number) => {
     if (price >= 1000000000) {
       return `Rp ${(price / 1000000000).toLocaleString("id-ID", { maximumFractionDigits: 2 })} M`;
     }
     return `Rp ${(price / 1000000).toLocaleString("id-ID", { maximumFractionDigits: 0 })} Jt`;
   };
+
+  // Preset location search tags
+  const quickLocationTags = [
+    "Kuta Utara",
+    "Badung",
+    "Canggu",
+    "Uluwatu",
+    "Pondok Indah",
+    "Jakarta Selatan",
+    "BSD City",
+    "Bandung",
+  ];
 
   return (
     <div className="space-y-6">
@@ -73,7 +86,7 @@ export default function MarketplaceView({ listings, onOpenMatchModal }: Marketpl
             Temukan Properti Impian & Investasi Terbaik
           </h2>
           <p className="text-black text-xs sm:text-sm">
-            Koleksi eksklusif rumah, villa, ruko, dan tanah terverifikasi dengan legalitas resmi SHM & ROI menarik.
+            Koleksi eksklusif rumah, villa, ruko, dan tanah terverifikasi dengan lokasi presisi (Kecamatan, Kabupaten, Kode Pos) & legalitas resmi.
           </p>
         </div>
       </div>
@@ -85,7 +98,7 @@ export default function MarketplaceView({ listings, onOpenMatchModal }: Marketpl
           <div className="relative lg:col-span-2">
             <input
               type="text"
-              placeholder="Cari lokasi, kode, atau kata kunci..."
+              placeholder="Cari lokasi spesifik (contoh: Kuta Utara, Badung, Denpasar, alamat)..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full px-4 py-2 bg-white border border-black text-sm text-black placeholder-gray-500 focus:outline-none"
@@ -135,6 +148,32 @@ export default function MarketplaceView({ listings, onOpenMatchModal }: Marketpl
           </div>
         </div>
 
+        {/* Quick Location Chips */}
+        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-black/20 text-xs">
+          <span className="font-bold text-black text-xs">Filter Wilayah Spesifik:</span>
+          <button
+            onClick={() => setSearchTerm("")}
+            className={`px-2 py-0.5 border border-black text-[11px] font-bold ${
+              !searchTerm ? "bg-black text-white" : "bg-white text-black hover:bg-gray-100"
+            }`}
+          >
+            Semua Wilayah
+          </button>
+          {quickLocationTags.map((tag) => (
+            <button
+              key={tag}
+              onClick={() => setSearchTerm(tag)}
+              className={`px-2 py-0.5 border border-black text-[11px] font-bold ${
+                searchTerm.toLowerCase() === tag.toLowerCase()
+                  ? "bg-black text-white"
+                  : "bg-white text-black hover:bg-gray-100"
+              }`}
+            >
+              📍 {tag}
+            </button>
+          ))}
+        </div>
+
         {/* Results Counter */}
         <div className="flex items-center justify-between text-xs text-black border-t border-black pt-3">
           <div>
@@ -148,9 +187,9 @@ export default function MarketplaceView({ listings, onOpenMatchModal }: Marketpl
                 setSelectedStatus("ALL");
                 setSelectedSewaJual("ALL");
               }}
-              className="text-black hover:underline"
+              className="text-black hover:underline font-bold"
             >
-              Reset Filter
+              [X] Reset Filter
             </button>
           )}
         </div>
@@ -161,7 +200,7 @@ export default function MarketplaceView({ listings, onOpenMatchModal }: Marketpl
         <div className="bg-white border border-black p-12 text-center space-y-3">
           <h3 className="text-lg font-bold text-black">Tidak Ada Properti yang Sesuai</h3>
           <p className="text-black text-xs max-w-sm mx-auto">
-            Coba ubah kata kunci pencarian atau reset filter untuk melihat properti lainnya.
+            Coba ubah kata kunci pencarian wilayah/alamat atau reset filter untuk melihat properti lainnya.
           </p>
         </div>
       ) : (
@@ -177,7 +216,7 @@ export default function MarketplaceView({ listings, onOpenMatchModal }: Marketpl
               <div
                 key={item.id}
                 onClick={() => setActiveListingModal(item)}
-                className="group cursor-pointer bg-white border border-black flex flex-col hover:bg-gray-50"
+                className="group cursor-pointer bg-white border border-black flex flex-col hover:bg-gray-50 transition"
               >
                 {/* Photo Carousel Area */}
                 <div className="relative h-56 w-full overflow-hidden bg-white border-b border-black">
@@ -248,14 +287,21 @@ export default function MarketplaceView({ listings, onOpenMatchModal }: Marketpl
                       <div className="text-xl font-bold text-black">
                         {formatPrice(item.harga)}
                       </div>
-                      <div className="text-xs font-mono text-black bg-white px-2 py-0.5 border border-black">
+                      <div className="text-xs font-mono text-black bg-white px-2 py-0.5 border border-black font-bold">
                         {item.kode}
                       </div>
                     </div>
 
-                    {/* Location */}
-                    <div className="flex items-center gap-1.5 text-xs text-black font-medium mt-1">
-                      <span className="line-clamp-1">{item.lokasi_area}</span>
+                    {/* Location Area & Full Detailed Address */}
+                    <div className="mt-3 space-y-1 bg-white p-2.5 border border-black text-xs text-black">
+                      <div className="font-bold flex items-center gap-1 text-black">
+                        📍 <span>{item.lokasi_area}</span>
+                      </div>
+                      {item.alamat_lengkap && (
+                        <div className="text-[11px] text-gray-700 leading-tight border-t border-black/20 pt-1 mt-1 line-clamp-2">
+                          <span className="font-semibold text-black">Alamat:</span> {item.alamat_lengkap}
+                        </div>
+                      )}
                     </div>
 
                     {/* Specs Row */}
@@ -278,6 +324,7 @@ export default function MarketplaceView({ listings, onOpenMatchModal }: Marketpl
                       </p>
                     )}
                   </div>
+
 
                   {/* Card Footer Actions */}
                   <div className="pt-3 flex items-center justify-between border-t border-black">

@@ -21,16 +21,20 @@ export default function ListingsManager({ listings, onRefresh, onOpenMatchModal 
   const [activeDetailModal, setActiveDetailModal] = useState<Listing | null>(null);
 
   const filteredListings = listings.filter((item) => {
+    const q = searchTerm.toLowerCase().trim();
     const matchesSearch =
-      item.kode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.lokasi_area.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.nama_pemilik.toLowerCase().includes(searchTerm.toLowerCase());
+      !q ||
+      item.kode.toLowerCase().includes(q) ||
+      item.lokasi_area.toLowerCase().includes(q) ||
+      (item.alamat_lengkap && item.alamat_lengkap.toLowerCase().includes(q)) ||
+      item.nama_pemilik.toLowerCase().includes(q);
 
     const matchesStatus = selectedStatus === "ALL" || item.status === selectedStatus;
     const matchesJenis = selectedJenis === "ALL" || item.jenis === selectedJenis;
 
     return matchesSearch && matchesStatus && matchesJenis;
   });
+
 
   const handleDelete = async (id: string, kode: string) => {
     if (!confirm(`Apakah Anda yakin ingin menghapus listing ${kode}?`)) return;
@@ -180,10 +184,16 @@ export default function ListingsManager({ listings, onRefresh, onOpenMatchModal 
                       </td>
                       <td className="px-4 py-3 border-r border-black">
                         <div className="font-bold">{item.jenis}</div>
-                        <div className="text-[11px]">
-                          {item.lokasi_area}
+                        <div className="text-[11px] font-bold text-black">
+                          📍 {item.lokasi_area}
                         </div>
+                        {item.alamat_lengkap && (
+                          <div className="text-[10px] text-gray-700 line-clamp-2 max-w-xs">
+                            {item.alamat_lengkap}
+                          </div>
+                        )}
                       </td>
+
                       <td className="px-4 py-3 border-r border-black">
                         <div>LT: {item.luas_tanah || 0}m² | LB: {item.luas_bangunan || 0}m²</div>
                         <div className="text-[11px]">KT {item.kamar_tidur || 0} | KM {item.kamar_mandi || 0}</div>

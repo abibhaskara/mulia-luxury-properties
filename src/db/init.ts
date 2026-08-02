@@ -67,8 +67,8 @@ export async function initDb() {
       kode: "HS-VIL-001",
       status: "AVAILABLE",
       jenis: "VILLA",
-      lokasi_area: "Canggu, Bali",
-      alamat_lengkap: "Jl. Pantai Batu Bolong No. 88, Canggu, Badung, Bali",
+      lokasi_area: "Canggu, Kuta Utara, Badung",
+      alamat_lengkap: "Jl. Pantai Batu Bolong No. 88, Canggu, Kerobokan, Kuta Utara, Badung, Bali, 80361, Indonesia",
       latitude: -8.6500,
       longitude: 115.1381,
       luas_tanah: 450,
@@ -97,7 +97,7 @@ export async function initDb() {
       status: "AVAILABLE",
       jenis: "RUMAH",
       lokasi_area: "Pondok Indah, Jakarta Selatan",
-      alamat_lengkap: "Jl. Metro Pondok Indah Blok III No. 12, Jakarta Selatan",
+      alamat_lengkap: "Jl. Metro Pondok Indah Blok III No. 12, Kebayoran Lama, Cilandak, Jakarta Selatan, DKI Jakarta, 12310, Indonesia",
       latitude: -6.2750,
       longitude: 106.7820,
       luas_tanah: 600,
@@ -125,7 +125,7 @@ export async function initDb() {
       status: "BOOKING",
       jenis: "RUKO",
       lokasi_area: "BSD City, Tangerang Selatan",
-      alamat_lengkap: "Ruko Foresta Business Loft No. 15, BSD City",
+      alamat_lengkap: "Ruko Foresta Business Loft No. 15, Pagedangan, BSD City, Tangerang Selatan, Banten, 15339, Indonesia",
       latitude: -6.3015,
       longitude: 106.6534,
       luas_tanah: 120,
@@ -152,8 +152,8 @@ export async function initDb() {
       kode: "HS-TNH-004",
       status: "AVAILABLE",
       jenis: "TANAH",
-      lokasi_area: "Uluwatu, Bali",
-      alamat_lengkap: "Jl. Raya Uluwatu Pecatu, Kuta Selatan, Bali",
+      lokasi_area: "Uluwatu, Badung, Bali",
+      alamat_lengkap: "Jl. Raya Uluwatu Pecatu, Kuta Selatan, Badung, Bali, 80364, Indonesia",
       latitude: -8.8149,
       longitude: 115.1186,
       luas_tanah: 2000,
@@ -180,7 +180,7 @@ export async function initDb() {
       status: "AVAILABLE",
       jenis: "RUMAH",
       lokasi_area: "Dago Pakar, Bandung",
-      alamat_lengkap: "Residen Dago Pakar Resort Blok F No. 7, Bandung",
+      alamat_lengkap: "Residen Dago Pakar Resort Blok F No. 7, Cimenyan, Dago Pakar, Bandung, Jawa Barat, 40198, Indonesia",
       latitude: -6.8640,
       longitude: 107.6360,
       luas_tanah: 350,
@@ -205,13 +205,14 @@ export async function initDb() {
   ];
 
   for (const listing of initialListings) {
-    const textSummary = `Properti ${listing.jenis} di ${listing.lokasi_area}. Harga Rp ${listing.harga}. ${listing.luas_tanah}m2 LT, ${listing.luas_bangunan}m2 LB, ${listing.kamar_tidur} kamar tidur. ${listing.catatan}`;
+    const textSummary = `Properti ${listing.jenis} di ${listing.lokasi_area}. Alamat lengkap: ${listing.alamat_lengkap}. Harga Rp ${listing.harga}. ${listing.luas_tanah}m2 LT, ${listing.luas_bangunan}m2 LB, ${listing.kamar_tidur} kamar tidur. ${listing.catatan}`;
     const embed = await getEmbedding(textSummary);
     await db.insert(listings).values({
       ...listing,
       embedding: embed,
     });
   }
+
 
   // Seed initial Buyers
   const initialBuyers = [
