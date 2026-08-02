@@ -1,22 +1,6 @@
 "use client";
 
 import { Listing } from "@/db/schema";
-import {
-  X,
-  MapPin,
-  Bed,
-  Bath,
-  Maximize,
-  Phone,
-  Folder,
-  Calendar,
-  ShieldCheck,
-  Building,
-  User,
-  DollarSign,
-  Share2,
-  ExternalLink,
-} from "lucide-react";
 import dynamic from "next/dynamic";
 
 const MapComponent = dynamic(() => import("./MapComponent"), { ssr: false });
@@ -44,31 +28,31 @@ export default function PropertyDetailModal({ listing, onClose }: PropertyDetail
   )}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden my-8 max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/90 backdrop-blur-md overflow-y-auto">
+      <div className="relative w-full max-w-4xl bg-white border border-black overflow-hidden my-8 max-h-[90vh] flex flex-col">
         {/* Header Bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/50">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-black bg-white">
           <div className="flex items-center gap-3">
-            <span className="px-3 py-1 text-xs font-bold rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+            <span className="px-3 py-1 text-xs font-bold bg-white text-black border border-black">
               {listing.kode}
             </span>
-            <h3 className="text-lg font-bold text-white">
+            <h3 className="text-lg font-bold text-black">
               {listing.jenis} - {listing.lokasi_area}
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="text-black font-bold hover:underline"
           >
-            <X className="w-5 h-5" />
+            [X]
           </button>
         </div>
 
         {/* Modal Scrollable Body */}
-        <div className="p-6 overflow-y-auto space-y-6 flex-1 text-slate-200">
+        <div className="p-6 overflow-y-auto space-y-6 flex-1 text-black">
           {/* Main Photo Gallery */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div className="md:col-span-2 h-72 rounded-xl overflow-hidden bg-slate-950 border border-slate-800">
+            <div className="md:col-span-2 h-72 bg-white border border-black">
               <img
                 src={photos[0]}
                 alt={listing.kode}
@@ -77,7 +61,7 @@ export default function PropertyDetailModal({ listing, onClose }: PropertyDetail
             </div>
             <div className="grid grid-rows-2 gap-3 h-72">
               {photos[1] ? (
-                <div className="rounded-xl overflow-hidden bg-slate-950 border border-slate-800">
+                <div className="bg-white border border-black overflow-hidden">
                   <img
                     src={photos[1]}
                     alt={listing.kode}
@@ -85,12 +69,12 @@ export default function PropertyDetailModal({ listing, onClose }: PropertyDetail
                   />
                 </div>
               ) : (
-                <div className="rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center text-slate-600 text-xs">
+                <div className="bg-white border border-black flex items-center justify-center text-black text-xs font-bold">
                   Foto Tambahan
                 </div>
               )}
               {photos[2] ? (
-                <div className="rounded-xl overflow-hidden bg-slate-950 border border-slate-800">
+                <div className="bg-white border border-black overflow-hidden">
                   <img
                     src={photos[2]}
                     alt={listing.kode}
@@ -98,7 +82,7 @@ export default function PropertyDetailModal({ listing, onClose }: PropertyDetail
                   />
                 </div>
               ) : (
-                <div className="rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center text-slate-600 text-xs">
+                <div className="bg-white border border-black flex items-center justify-center text-black text-xs font-bold">
                   Harsalab Studio
                 </div>
               )}
@@ -106,71 +90,70 @@ export default function PropertyDetailModal({ listing, onClose }: PropertyDetail
           </div>
 
           {/* Pricing & Key Summary Banner */}
-          <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border border-emerald-500/20">
+          <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-white border border-black">
             <div>
-              <div className="text-xs text-slate-400 font-medium">Harga Penawaran ({listing.sewa_jual || "JUAL"})</div>
-              <div className="text-2xl sm:text-3xl font-black text-emerald-400">
+              <div className="text-xs text-black font-bold">Harga Penawaran ({listing.sewa_jual || "JUAL"})</div>
+              <div className="text-2xl sm:text-3xl font-bold text-black">
                 {formatPrice(listing.harga)}
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className="px-3 py-1.5 rounded-lg bg-slate-800 text-xs font-bold text-slate-200">
-                Status: <span className="text-emerald-400">{listing.status}</span>
+              <span className="px-3 py-1.5 bg-white border border-black text-xs font-bold text-black">
+                Status: {listing.status}
               </span>
-              <span className="px-3 py-1.5 rounded-lg bg-slate-800 text-xs font-bold text-slate-200">
-                Komisi Agen: <span className="text-amber-400">{listing.komisi || "2.5%"}</span>
+              <span className="px-3 py-1.5 bg-white border border-black text-xs font-bold text-black">
+                Komisi Agen: {listing.komisi || "2.5%"}
               </span>
             </div>
           </div>
 
           {/* Specifications Grid */}
           <div className="space-y-3">
-            <h4 className="text-sm font-bold text-slate-100 uppercase tracking-wider">Spesifikasi Properti</h4>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs">
+            <h4 className="text-sm font-bold text-black uppercase tracking-wider">Spesifikasi Properti</h4>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 bg-white border border-black text-xs">
               <div>
-                <div className="text-slate-400">Luas Tanah (LT)</div>
-                <div className="font-bold text-white text-sm mt-0.5">{listing.luas_tanah || 0} m²</div>
+                <div className="text-black">Luas Tanah (LT)</div>
+                <div className="font-bold text-black text-sm mt-0.5">{listing.luas_tanah || 0} m²</div>
               </div>
               <div>
-                <div className="text-slate-400">Luas Bangunan (LB)</div>
-                <div className="font-bold text-white text-sm mt-0.5">{listing.luas_bangunan || 0} m²</div>
+                <div className="text-black">Luas Bangunan (LB)</div>
+                <div className="font-bold text-black text-sm mt-0.5">{listing.luas_bangunan || 0} m²</div>
               </div>
               <div>
-                <div className="text-slate-400">Kamar Tidur (KT)</div>
-                <div className="font-bold text-white text-sm mt-0.5">{listing.kamar_tidur || 0} Kamar</div>
+                <div className="text-black">Kamar Tidur (KT)</div>
+                <div className="font-bold text-black text-sm mt-0.5">{listing.kamar_tidur || 0} Kamar</div>
               </div>
               <div>
-                <div className="text-slate-400">Kamar Mandi (KM)</div>
-                <div className="font-bold text-white text-sm mt-0.5">{listing.kamar_mandi || 0} Kamar</div>
+                <div className="text-black">Kamar Mandi (KM)</div>
+                <div className="font-bold text-black text-sm mt-0.5">{listing.kamar_mandi || 0} Kamar</div>
               </div>
               <div>
-                <div className="text-slate-400">Furnished</div>
-                <div className="font-bold text-white text-sm mt-0.5">{listing.furnished || "NON"}</div>
+                <div className="text-black">Furnished</div>
+                <div className="font-bold text-black text-sm mt-0.5">{listing.furnished || "NON"}</div>
               </div>
               <div>
-                <div className="text-slate-400">Sertifikat</div>
-                <div className="font-bold text-white text-sm mt-0.5">{listing.sertifikat || "SHM"}</div>
+                <div className="text-black">Sertifikat</div>
+                <div className="font-bold text-black text-sm mt-0.5">{listing.sertifikat || "SHM"}</div>
               </div>
               <div>
-                <div className="text-slate-400">Tahun Bangun</div>
-                <div className="font-bold text-white text-sm mt-0.5">{listing.tahun_bangun || "-"}</div>
+                <div className="text-black">Tahun Bangun</div>
+                <div className="font-bold text-black text-sm mt-0.5">{listing.tahun_bangun || "-"}</div>
               </div>
               <div>
-                <div className="text-slate-400">Transaksi</div>
-                <div className="font-bold text-white text-sm mt-0.5">{listing.sewa_jual || "JUAL"}</div>
+                <div className="text-black">Transaksi</div>
+                <div className="font-bold text-black text-sm mt-0.5">{listing.sewa_jual || "JUAL"}</div>
               </div>
             </div>
           </div>
 
           {/* Location & Alamat */}
           <div className="space-y-2">
-            <h4 className="text-sm font-bold text-slate-100 uppercase tracking-wider">Lokasi & Alamat Lengkap</h4>
-            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1 text-xs">
-              <div className="flex items-center gap-1.5 font-bold text-emerald-400">
-                <MapPin className="w-4 h-4" />
-                <span>{listing.lokasi_area}</span>
+            <h4 className="text-sm font-bold text-black uppercase tracking-wider">Lokasi & Alamat Lengkap</h4>
+            <div className="p-4 bg-white border border-black space-y-1 text-xs">
+              <div className="flex items-center gap-1.5 font-bold text-black">
+                <span>📍 {listing.lokasi_area}</span>
               </div>
-              <p className="text-slate-300 pl-5">{listing.alamat_lengkap || "Alamat lengkap tersedia untuk calon pembeli terverifikasi."}</p>
+              <p className="text-black">{listing.alamat_lengkap || "Alamat lengkap tersedia untuk calon pembeli terverifikasi."}</p>
             </div>
 
             {/* Interactive Leaflet Map */}
@@ -189,32 +172,29 @@ export default function PropertyDetailModal({ listing, onClose }: PropertyDetail
 
           {/* Owner & Contact Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3 text-xs">
-              <div className="flex items-center gap-2 font-bold text-slate-100 text-sm">
-                <User className="w-4 h-4 text-emerald-400" />
+            <div className="p-4 bg-white border border-black space-y-3 text-xs">
+              <div className="flex items-center gap-2 font-bold text-black text-sm">
                 Informasi Pemilik (Owner)
               </div>
-              <div className="space-y-1 text-slate-300">
-                <div>Nama: <span className="font-semibold text-white">{listing.nama_pemilik}</span></div>
-                <div>No. Telepon/WA: <span className="font-semibold text-white">{listing.no_hp}</span></div>
+              <div className="space-y-1 text-black">
+                <div>Nama: <span className="font-bold text-black">{listing.nama_pemilik}</span></div>
+                <div>No. Telepon/WA: <span className="font-bold text-black">{listing.no_hp}</span></div>
               </div>
               <a
                 href={whatsappUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs transition"
+                className="inline-flex items-center gap-2 px-3 py-2 bg-black text-white font-bold text-xs"
               >
-                <Phone className="w-3.5 h-3.5" />
-                Hubungi via WhatsApp Owner
+                [Hubungi via WhatsApp Owner]
               </a>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3 text-xs">
-              <div className="flex items-center gap-2 font-bold text-slate-100 text-sm">
-                <Folder className="w-4 h-4 text-emerald-400" />
+            <div className="p-4 bg-white border border-black space-y-3 text-xs">
+              <div className="flex items-center gap-2 font-bold text-black text-sm">
                 Berkas & Dokumen Tambahan
               </div>
-              <p className="text-slate-400">
+              <p className="text-black">
                 {listing.link_gdrive ? "Folder Google Drive berisi foto resolusi tinggi, denah lantai, dan salinan sertifikat." : "Belum ada link Google Drive terlampir."}
               </p>
               {listing.link_gdrive && (
@@ -222,10 +202,9 @@ export default function PropertyDetailModal({ listing, onClose }: PropertyDetail
                   href={listing.link_gdrive}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 font-bold text-xs transition border border-slate-700"
+                  className="inline-flex items-center gap-2 px-3 py-2 bg-white text-black font-bold text-xs border border-black hover:bg-gray-100"
                 >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  Buka Google Drive Folder
+                  [Buka Google Drive Folder]
                 </a>
               )}
             </div>
@@ -233,18 +212,18 @@ export default function PropertyDetailModal({ listing, onClose }: PropertyDetail
 
           {/* Catatan / Description */}
           {listing.catatan && (
-            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1 text-xs">
-              <div className="font-bold text-slate-300">Catatan Agen & Deskripsi Unit:</div>
-              <p className="text-slate-400 leading-relaxed">{listing.catatan}</p>
+            <div className="p-4 bg-white border border-black space-y-1 text-xs">
+              <div className="font-bold text-black">Catatan Agen & Deskripsi Unit:</div>
+              <p className="text-black leading-relaxed">{listing.catatan}</p>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-800 bg-slate-950/80 flex items-center justify-end">
+        <div className="px-6 py-4 border-t border-black bg-white flex items-center justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-xs font-bold rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition"
+            className="px-4 py-2 text-xs font-bold bg-white border border-black text-black hover:bg-gray-100"
           >
             Tutup
           </button>

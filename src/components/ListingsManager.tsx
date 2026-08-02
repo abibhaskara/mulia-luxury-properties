@@ -2,21 +2,6 @@
 
 import { useState } from "react";
 import { Listing } from "@/db/schema";
-import {
-  Plus,
-  Search,
-  Building2,
-  Trash2,
-  Edit,
-  Eye,
-  MapPin,
-  Tag,
-  SlidersHorizontal,
-  Table as TableIcon,
-  Grid as GridIcon,
-  Sparkles,
-  Phone,
-} from "lucide-react";
 import PropertyFormModal from "./PropertyFormModal";
 import PropertyDetailModal from "./PropertyDetailModal";
 
@@ -85,60 +70,53 @@ export default function ListingsManager({ listings, onRefresh, onOpenMatchModal 
   return (
     <div className="space-y-6">
       {/* Top Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-black p-4">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold">
-            <Building2 className="w-5 h-5" />
-          </div>
           <div>
-            <h2 className="text-base font-bold text-white">Database Properti (Listings)</h2>
-            <p className="text-xs text-slate-400">Total {listings.length} unit properti terdaftar</p>
+            <h2 className="text-base font-bold text-black">Database Properti (Listings)</h2>
+            <p className="text-xs text-black">Total {listings.length} unit properti terdaftar</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           {/* View Mode Toggle */}
-          <div className="flex items-center bg-slate-950 border border-slate-800 rounded-lg p-1">
+          <div className="flex items-center bg-white border border-black p-1">
             <button
               onClick={() => setViewMode("table")}
-              className={`p-1.5 rounded text-xs font-semibold ${
-                viewMode === "table" ? "bg-slate-800 text-emerald-400" : "text-slate-400"
+              className={`p-1.5 text-xs font-bold ${
+                viewMode === "table" ? "bg-black text-white" : "text-black"
               }`}
-              title="Tampilan Tabel"
             >
-              <TableIcon className="w-4 h-4" />
+              [Table]
             </button>
             <button
               onClick={() => setViewMode("grid")}
-              className={`p-1.5 rounded text-xs font-semibold ${
-                viewMode === "grid" ? "bg-slate-800 text-emerald-400" : "text-slate-400"
+              className={`p-1.5 text-xs font-bold ${
+                viewMode === "grid" ? "bg-black text-white" : "text-black"
               }`}
-              title="Tampilan Grid"
             >
-              <GridIcon className="w-4 h-4" />
+              [Grid]
             </button>
           </div>
 
           <button
             onClick={() => setActiveEditModal("NEW")}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/20 transition"
+            className="px-4 py-2 bg-white border border-black text-black font-bold text-xs hover:bg-gray-100"
           >
-            <Plus className="w-4 h-4 stroke-[3]" />
-            <span>Tambah Listing Baru</span>
+            [+] Tambah Listing Baru
           </button>
         </div>
       </div>
 
       {/* Filter Controls */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-900/60 border border-slate-800/80 rounded-xl p-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-white border border-black p-3">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <input
             type="text"
             placeholder="Cari kode, area, pemilik..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+            className="w-full px-3 py-1.5 bg-white border border-black text-xs text-black placeholder-gray-500 focus:outline-none"
           />
         </div>
 
@@ -146,7 +124,7 @@ export default function ListingsManager({ listings, onRefresh, onOpenMatchModal 
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
+            className="w-full px-3 py-1.5 bg-white border border-black text-xs text-black focus:outline-none"
           >
             <option value="ALL">Semua Status Unit</option>
             <option value="AVAILABLE">AVAILABLE (Tersedia)</option>
@@ -159,7 +137,7 @@ export default function ListingsManager({ listings, onRefresh, onOpenMatchModal 
           <select
             value={selectedJenis}
             onChange={(e) => setSelectedJenis(e.target.value)}
-            className="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
+            className="w-full px-3 py-1.5 bg-white border border-black text-xs text-black focus:outline-none"
           >
             <option value="ALL">Semua Jenis Properti</option>
             <option value="RUMAH">Rumah</option>
@@ -172,67 +150,59 @@ export default function ListingsManager({ listings, onRefresh, onOpenMatchModal 
 
       {/* Main Table / Grid View */}
       {viewMode === "table" ? (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <div className="bg-white border border-black overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950 text-slate-400 uppercase font-semibold border-b border-slate-800">
+            <table className="w-full text-left text-xs text-black">
+              <thead className="bg-white text-black uppercase font-bold border-b border-black">
                 <tr>
-                  <th className="px-4 py-3">Kode / Unit</th>
-                  <th className="px-4 py-3">Jenis & Area</th>
-                  <th className="px-4 py-3">Spesifikasi</th>
-                  <th className="px-4 py-3">Harga & Komisi</th>
-                  <th className="px-4 py-3">Pemilik (Owner)</th>
-                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3 border-r border-black">Kode / Unit</th>
+                  <th className="px-4 py-3 border-r border-black">Jenis & Area</th>
+                  <th className="px-4 py-3 border-r border-black">Spesifikasi</th>
+                  <th className="px-4 py-3 border-r border-black">Harga & Komisi</th>
+                  <th className="px-4 py-3 border-r border-black">Pemilik (Owner)</th>
+                  <th className="px-4 py-3 border-r border-black">Status</th>
                   <th className="px-4 py-3 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-black">
                 {filteredListings.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-4 py-8 text-center text-slate-500">
+                    <td colSpan={7} className="px-4 py-8 text-center text-black font-bold">
                       Tidak ada data listing properti ditemukan.
                     </td>
                   </tr>
                 ) : (
                   filteredListings.map((item) => (
-                    <tr key={item.id} className="hover:bg-slate-800/40 transition">
-                      <td className="px-4 py-3 font-mono font-bold text-emerald-400">
+                    <tr key={item.id} className="hover:bg-gray-100">
+                      <td className="px-4 py-3 font-mono font-bold border-r border-black">
                         {item.kode}
-                        <div className="text-[10px] text-slate-500 font-sans">{item.sewa_jual || "JUAL"}</div>
+                        <div className="text-[10px]">{item.sewa_jual || "JUAL"}</div>
                       </td>
-                      <td className="px-4 py-3">
-                        <div className="font-semibold text-white">{item.jenis}</div>
-                        <div className="text-slate-400 text-[11px] flex items-center gap-1">
-                          <MapPin className="w-3 h-3 text-slate-500" />
+                      <td className="px-4 py-3 border-r border-black">
+                        <div className="font-bold">{item.jenis}</div>
+                        <div className="text-[11px]">
                           {item.lokasi_area}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-slate-300">
+                      <td className="px-4 py-3 border-r border-black">
                         <div>LT: {item.luas_tanah || 0}m² | LB: {item.luas_bangunan || 0}m²</div>
-                        <div className="text-[11px] text-slate-400">🛏️ {item.kamar_tidur || 0} KT | 🚿 {item.kamar_mandi || 0} KM</div>
+                        <div className="text-[11px]">KT {item.kamar_tidur || 0} | KM {item.kamar_mandi || 0}</div>
                       </td>
-                      <td className="px-4 py-3">
-                        <div className="font-extrabold text-emerald-400">{formatPrice(item.harga)}</div>
-                        <div className="text-[10px] text-amber-400">Komisi: {item.komisi || "2.5%"}</div>
+                      <td className="px-4 py-3 border-r border-black">
+                        <div className="font-bold">{formatPrice(item.harga)}</div>
+                        <div className="text-[10px]">Komisi: {item.komisi || "2.5%"}</div>
                       </td>
-                      <td className="px-4 py-3">
-                        <div className="font-medium text-slate-200">{item.nama_pemilik}</div>
-                        <div className="text-slate-400 text-[11px] flex items-center gap-1">
-                          <Phone className="w-3 h-3 text-slate-500" />
+                      <td className="px-4 py-3 border-r border-black">
+                        <div className="font-bold">{item.nama_pemilik}</div>
+                        <div className="text-[11px]">
                           {item.no_hp}
                         </div>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 border-r border-black">
                         <select
                           value={item.status || "AVAILABLE"}
                           onChange={(e) => handleStatusChange(item, e.target.value)}
-                          className={`px-2 py-1 rounded text-[11px] font-bold focus:outline-none ${
-                            item.status === "AVAILABLE"
-                              ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
-                              : item.status === "BOOKING"
-                              ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
-                              : "bg-rose-500/20 text-rose-400 border border-rose-500/40"
-                          }`}
+                          className="px-2 py-1 text-[11px] font-bold bg-white text-black border border-black focus:outline-none"
                         >
                           <option value="AVAILABLE">AVAILABLE</option>
                           <option value="BOOKING">BOOKING</option>
@@ -240,36 +210,32 @@ export default function ListingsManager({ listings, onRefresh, onOpenMatchModal 
                         </select>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
+                        <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => setActiveDetailModal(item)}
-                            className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700"
-                            title="Lihat Detail"
+                            className="font-bold text-[10px] uppercase hover:underline"
                           >
-                            <Eye className="w-3.5 h-3.5" />
+                            [Detail]
                           </button>
                           <button
                             onClick={() => setActiveEditModal(item)}
-                            className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700"
-                            title="Edit Listing"
+                            className="font-bold text-[10px] uppercase hover:underline"
                           >
-                            <Edit className="w-3.5 h-3.5" />
+                            [Edit]
                           </button>
                           {onOpenMatchModal && (
                             <button
                               onClick={() => onOpenMatchModal(item)}
-                              className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30"
-                              title="Match Client"
+                              className="font-bold text-[10px] uppercase hover:underline"
                             >
-                              <Sparkles className="w-3.5 h-3.5" />
+                              [Match]
                             </button>
                           )}
                           <button
                             onClick={() => handleDelete(item.id, item.kode)}
-                            className="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500/20"
-                            title="Hapus"
+                            className="font-bold text-[10px] uppercase hover:underline"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            [Delete]
                           </button>
                         </div>
                       </td>
@@ -286,38 +252,34 @@ export default function ListingsManager({ listings, onRefresh, onOpenMatchModal 
           {filteredListings.map((item) => (
             <div
               key={item.id}
-              className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3 shadow-lg hover:border-slate-700 transition"
+              className="bg-white border border-black p-4 space-y-3"
             >
               <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold text-emerald-400">{item.kode}</span>
-                <span
-                  className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                    item.status === "AVAILABLE" ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"
-                  }`}
-                >
+                <span className="font-mono text-xs font-bold text-black">{item.kode}</span>
+                <span className="px-2 py-0.5 text-[10px] font-bold border border-black bg-white text-black">
                   {item.status}
                 </span>
               </div>
               <div>
-                <h3 className="font-bold text-white text-sm">{item.jenis} - {item.lokasi_area}</h3>
-                <div className="text-emerald-400 font-extrabold text-base mt-1">{formatPrice(item.harga)}</div>
+                <h3 className="font-bold text-black text-sm">{item.jenis} - {item.lokasi_area}</h3>
+                <div className="font-bold text-base mt-1">{formatPrice(item.harga)}</div>
               </div>
-              <div className="text-xs text-slate-400 space-y-1 pt-2 border-t border-slate-800">
-                <div>Owner: <span className="text-slate-200 font-medium">{item.nama_pemilik} ({item.no_hp})</span></div>
+              <div className="text-xs text-black space-y-1 pt-2 border-t border-black">
+                <div>Owner: <span className="font-bold">{item.nama_pemilik} ({item.no_hp})</span></div>
                 <div>LT: {item.luas_tanah}m² | LB: {item.luas_bangunan}m² | {item.kamar_tidur} KT</div>
               </div>
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-black">
                 <button
                   onClick={() => setActiveDetailModal(item)}
-                  className="px-2.5 py-1 rounded text-xs bg-slate-800 text-slate-300 hover:bg-slate-700 font-semibold"
+                  className="font-bold text-[10px] uppercase hover:underline"
                 >
-                  Detail
+                  [Detail]
                 </button>
                 <button
                   onClick={() => setActiveEditModal(item)}
-                  className="px-2.5 py-1 rounded text-xs bg-slate-800 text-slate-300 hover:bg-slate-700 font-semibold"
+                  className="font-bold text-[10px] uppercase hover:underline"
                 >
-                  Edit
+                  [Edit]
                 </button>
               </div>
             </div>

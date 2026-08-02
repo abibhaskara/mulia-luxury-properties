@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Listing } from "@/db/schema";
+import LocationSearchBar, { LocationSearchResult } from "./LocationSearchBar";
 
 interface MapComponentProps {
   listings: Listing[];
@@ -10,6 +11,7 @@ interface MapComponentProps {
   height?: string;
   center?: [number, number];
   zoom?: number;
+  showSearchBar?: boolean;
 }
 
 export default function MapComponent({
@@ -19,15 +21,15 @@ export default function MapComponent({
   height = "450px",
   center = [-8.6500, 115.1381], // Default Bali / Indonesia center
   zoom = 10,
+  showSearchBar = true,
 }: MapComponentProps) {
   const [mounted, setMounted] = useState(false);
   const [L, setL] = useState<any>(null);
+  const [mapInstance, setMapInstance] = useState<any>(null);
 
   useEffect(() => {
     setMounted(true);
-    // Dynamically import Leaflet on client side
     import("leaflet").then((leaflet) => {
-      // Fix default Leaflet icon assets
       delete (leaflet.Icon.Default.prototype as any)._getIconUrl;
       leaflet.Icon.Default.mergeOptions({
         iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
@@ -44,7 +46,6 @@ export default function MapComponent({
     const mapElement = document.getElementById("leaflet-map-container");
     if (!mapElement) return;
 
-    // Remove existing map instance if stored
     if ((mapElement as any)._leaflet_map) {
       (mapElement as any)._leaflet_map.remove();
     }
@@ -65,19 +66,17 @@ export default function MapComponent({
 
     const map = L.map("leaflet-map-container").setView(initialCenter, zoom);
     (mapElement as any)._leaflet_map = map;
+    setMapInstance(map);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(map);
 
-    // Custom Icon Creators
     const createCustomIcon = (status: string | null) => {
-      let color = "#10B981"; // Emerald for AVAILABLE
-      if (status === "BOOKING") color = "#F59E0B"; // Amber for BOOKING
-      if (status === "SOLD") color = "#EF4444"; // Red for SOLD
+      let color = "#000000";
 
       const svgString = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${color}" width="36" height="36" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${color}" width="36" height="36">
           <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
         </svg>
       `;
@@ -101,11 +100,11 @@ export default function MapComponent({
         : "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=400&q=80";
 
       const popupContent = `
-        <div style="font-family: system-ui, sans-serif; width: 220px; color: #1e293b;">
-          <img src="${photoUrl}" style="width: 100%; height: 110px; object-fit: cover; border-radius: 6px; margin-bottom: 6px;" />
-          <div style="font-weight: 700; font-size: 13px; color: #0f172a;">${item.kode} - ${item.jenis}</div>
-          <div style="font-size: 11px; color: #64748b; margin-bottom: 4px;">📍 ${item.lokasi_area}</div>
-          <div style="font-size: 14px; font-weight: 800; color: #059669;">Rp ${item.harga.toLocaleString()}</div>
+        <div style="font-family: system-ui, sans-serif; width: 220px; color: #000;">
+          <img src="${photoUrl}" style="width: 100%; height: 110px; object-fit: cover; border: 1px solid #000; margin-bottom: 6px;" />
+          <div style="font-weight: 700; font-size: 13px; color: #000;">${item.kode} - ${item.jenis}</div>
+          <div style="font-size: 11px; color: #000; margin-bottom: 4px;">📍 ${item.lokasi_area}</div>
+          <div style="font-size: 14px; font-weight: 800; color: #000;">Rp ${item.harga.toLocaleString()}</div>
           <div style="font-size: 11px; margin-top: 4px; display: flex; gap: 8px;">
             <span>🛏️ ${item.kamar_tidur} KT</span>
             <span>📐 ${item.luas_tanah}m² LT</span>
@@ -128,14 +127,19 @@ export default function MapComponent({
     };
   }, [mounted, L, listings, selectedListingId, center, zoom, onSelectListing]);
 
+  const handleSelectLocation = (loc: LocationSearchResult) => {
+    if (mapInstance) {
+      mapInstance.flyTo([loc.latitude, loc.longitude], 14);
+    }
+  };
+
   if (!mounted) {
     return (
       <div
         style={{ height }}
-        className="w-full bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-center text-slate-400 font-medium"
+        className="w-full bg-white border border-black flex items-center justify-center text-black font-bold"
       >
         <div className="flex items-center gap-2">
-          <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
           <span>Memuat Peta Properti...</span>
         </div>
       </div>
@@ -143,7 +147,19 @@ export default function MapComponent({
   }
 
   return (
-    <div className="relative w-full rounded-xl overflow-hidden shadow-xl border border-slate-800">
+    <div className="relative w-full bg-white border border-black space-y-2">
+      {showSearchBar && (
+        <div className="p-3 bg-white border-b border-black">
+          <label className="block text-black font-bold mb-1 text-xs">
+            🔍 Cari Lokasi di Peta (Google Maps Style Search):
+          </label>
+          <LocationSearchBar
+            onSelectLocation={handleSelectLocation}
+            placeholder="Cari lokasi di peta (contoh: Canggu Bali, Pondok Indah, BSD)..."
+          />
+        </div>
+      )}
+
       <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css"

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Buyer, Listing } from "@/db/schema";
-import { Sparkles, X, Building2, CheckCircle2, ChevronRight, Filter, AlertCircle, Phone, ArrowUpRight } from "lucide-react";
 import PropertyDetailModal from "./PropertyDetailModal";
 
 interface MatchResult {
@@ -67,56 +66,50 @@ export default function AIMatchModal({ initialBuyer, buyersList, onClose }: AIMa
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden my-8 max-h-[92vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/90 backdrop-blur-md overflow-y-auto">
+      <div className="relative w-full max-w-4xl bg-white border border-black overflow-hidden my-8 max-h-[92vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-black bg-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 shadow-lg shadow-emerald-500/20">
-              <Sparkles className="w-6 h-6 stroke-[2.5]" />
-            </div>
             <div>
-              <h3 className="text-lg font-extrabold text-white flex items-center gap-2">
-                Gemini AI Property Matcher
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  text-embedding-004
-                </span>
+              <h3 className="text-lg font-bold text-black flex items-center gap-2">
+                AI Property Matcher
               </h3>
-              <p className="text-xs text-slate-400">
-                Pencocokan AI Vector Similarity antara preferensi buyer & listing properti
+              <p className="text-xs text-black">
+                Pencocokan AI Similarity antara preferensi buyer & listing properti
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="text-black font-bold hover:underline"
           >
-            <X className="w-5 h-5" />
+            [X]
           </button>
         </div>
 
         {/* Selection Bar */}
-        <div className="p-4 bg-slate-950 border-b border-slate-800 space-y-3">
+        <div className="p-4 bg-white border-b border-black space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-4 text-xs">
-              <label className="flex items-center gap-2 cursor-pointer text-slate-300">
+              <label className="flex items-center gap-2 cursor-pointer text-black">
                 <input
                   type="radio"
                   name="matchType"
                   checked={!useCustomQuery}
                   onChange={() => setUseCustomQuery(false)}
-                  className="accent-emerald-500"
+                  className="accent-black"
                 />
                 Pilih Buyer dari Database CRM
               </label>
-              <label className="flex items-center gap-2 cursor-pointer text-slate-300">
+              <label className="flex items-center gap-2 cursor-pointer text-black">
                 <input
                   type="radio"
                   name="matchType"
                   checked={useCustomQuery}
                   onChange={() => setUseCustomQuery(true)}
-                  className="accent-emerald-500"
+                  className="accent-black"
                 />
                 Input Kriteria Bebas (Custom Query)
               </label>
@@ -125,10 +118,9 @@ export default function AIMatchModal({ initialBuyer, buyersList, onClose }: AIMa
             <button
               onClick={runMatch}
               disabled={isLoading}
-              className="px-4 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs shadow-md shadow-emerald-500/20 flex items-center gap-1.5"
+              className="px-4 py-1.5 bg-black text-white font-bold text-xs"
             >
-              <Sparkles className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} />
-              <span>{isLoading ? "Memproses Embedding..." : "Jalankan AI Match"}</span>
+              <span>{isLoading ? "Memproses..." : "Jalankan AI Match"}</span>
             </button>
           </div>
 
@@ -137,11 +129,11 @@ export default function AIMatchModal({ initialBuyer, buyersList, onClose }: AIMa
               <select
                 value={selectedBuyerId}
                 onChange={(e) => setSelectedBuyerId(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white focus:outline-none focus:border-emerald-500"
+                className="w-full px-3 py-2 bg-white border border-black text-xs text-black focus:outline-none"
               >
                 {buyersList.map((b) => (
                   <option key={b.id} value={b.id}>
-                    👤 {b.nama_klien} — {b.jenis_dicari} di {b.lokasi_dicari} (Budget: Rp{" "}
+                    {b.nama_klien} — {b.jenis_dicari} di {b.lokasi_dicari} (Budget: Rp{" "}
                     {((b.budget_max || 0) / 1000000000).toFixed(1)} M)
                   </option>
                 ))}
@@ -154,21 +146,21 @@ export default function AIMatchModal({ initialBuyer, buyersList, onClose }: AIMa
                 value={customQuery}
                 onChange={(e) => setCustomQuery(e.target.value)}
                 placeholder="Misal: Saya cari villa tropical di Bali budget 8 Miliar dekat pantai batu bolong..."
-                className="flex-1 px-3 py-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white focus:outline-none focus:border-emerald-500"
+                className="flex-1 px-3 py-2 bg-white border border-black text-xs text-black focus:outline-none"
               />
             </div>
           )}
 
           {/* Active Buyer Requirement Info */}
           {activeBuyerInfo && !useCustomQuery && (
-            <div className="p-3 rounded-lg bg-slate-900/80 border border-slate-800 text-xs text-slate-300 flex flex-wrap items-center justify-between gap-2">
+            <div className="p-3 bg-white border border-black text-xs text-black flex flex-wrap items-center justify-between gap-2">
               <div>
-                Klien: <span className="font-bold text-white">{activeBuyerInfo.nama_klien}</span> | Tipe:{" "}
-                <span className="font-bold text-emerald-400">{activeBuyerInfo.jenis_dicari}</span> | Lokasi:{" "}
-                <span className="font-bold text-white">{activeBuyerInfo.lokasi_dicari}</span>
+                Klien: <span className="font-bold">{activeBuyerInfo.nama_klien}</span> | Tipe:{" "}
+                <span className="font-bold">{activeBuyerInfo.jenis_dicari}</span> | Lokasi:{" "}
+                <span className="font-bold">{activeBuyerInfo.lokasi_dicari}</span>
               </div>
-              <div className="text-slate-400">
-                Catatan: <span className="italic text-slate-300">"{activeBuyerInfo.catatan || "Tidak ada"}"</span>
+              <div>
+                Catatan: <span className="italic">"{activeBuyerInfo.catatan || "Tidak ada"}"</span>
               </div>
             </div>
           )}
@@ -177,13 +169,11 @@ export default function AIMatchModal({ initialBuyer, buyersList, onClose }: AIMa
         {/* Match Results List */}
         <div className="p-6 overflow-y-auto space-y-4 flex-1">
           {isLoading ? (
-            <div className="py-16 text-center space-y-3">
-              <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-              <div className="text-sm font-bold text-slate-200">Menghitung AI Vector Embedding & Pitch...</div>
-              <p className="text-xs text-slate-500">Menganalisis kemiripan spasial dan kriteria properti...</p>
+            <div className="py-16 text-center text-black font-bold text-sm">
+              Menghitung AI Vector Embedding & Pitch...
             </div>
           ) : matchResults.length === 0 ? (
-            <div className="py-12 text-center text-slate-500 text-xs">
+            <div className="py-12 text-center text-black text-xs font-bold">
               Belum ada hasil match. Silakan pilih buyer atau masukkan kriteria pencarian.
             </div>
           ) : (
@@ -196,7 +186,7 @@ export default function AIMatchModal({ initialBuyer, buyersList, onClose }: AIMa
               return (
                 <div
                   key={item.listing.id}
-                  className="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3 shadow-lg hover:border-emerald-500/40 transition"
+                  className="bg-white border border-black p-4 space-y-3"
                 >
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     {/* Left Info */}
@@ -204,21 +194,21 @@ export default function AIMatchModal({ initialBuyer, buyersList, onClose }: AIMa
                       <img
                         src={photoUrl}
                         alt={item.listing.kode}
-                        className="w-20 h-20 rounded-lg object-cover border border-slate-800 shrink-0"
+                        className="w-20 h-20 object-cover border border-black shrink-0"
                       />
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs font-bold text-emerald-400">
+                          <span className="font-mono text-xs font-bold text-black">
                             #{idx + 1} {item.listing.kode}
                           </span>
-                          <span className="text-xs font-semibold text-slate-400">
+                          <span className="text-xs font-bold text-black">
                             {item.listing.jenis} • {item.listing.lokasi_area}
                           </span>
                         </div>
-                        <div className="text-base font-extrabold text-white mt-0.5">
+                        <div className="text-base font-bold text-black mt-0.5">
                           {formatPrice(item.listing.harga)}
                         </div>
-                        <div className="text-xs text-slate-400 mt-1">
+                        <div className="text-xs text-black mt-1">
                           LT {item.listing.luas_tanah}m² | LB {item.listing.luas_bangunan}m² | {item.listing.kamar_tidur} KT | {item.listing.furnished}
                         </div>
                       </div>
@@ -227,60 +217,36 @@ export default function AIMatchModal({ initialBuyer, buyersList, onClose }: AIMa
                     {/* Right Match Score */}
                     <div className="w-full sm:w-auto flex flex-col items-end gap-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-slate-400 font-medium">Kesesuaian (Match):</span>
-                        <span
-                          className={`text-xl font-black ${
-                            item.matchPercentage >= 80
-                              ? "text-emerald-400"
-                              : item.matchPercentage >= 60
-                              ? "text-amber-400"
-                              : "text-slate-400"
-                          }`}
-                        >
+                        <span className="text-xs text-black font-bold">Kesesuaian:</span>
+                        <span className="text-xl font-bold text-black">
                           {item.matchPercentage}%
                         </span>
                       </div>
-
-                      {/* Progress Bar */}
-                      <div className="w-36 h-2 bg-slate-800 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${
-                            item.matchPercentage >= 80
-                              ? "bg-gradient-to-r from-emerald-500 to-teal-400"
-                              : item.matchPercentage >= 60
-                              ? "bg-amber-500"
-                              : "bg-slate-600"
-                          }`}
-                          style={{ width: `${item.matchPercentage}%` }}
-                        />
-                      </div>
-                      <div className="text-[10px] text-slate-500 font-mono">
+                      <div className="text-[10px] text-black font-mono">
                         Vector Sim: {item.vectorScore}% | Rules: {item.ruleScore}%
                       </div>
                     </div>
                   </div>
 
                   {/* AI Recommendation Pitch Box */}
-                  <div className="p-3 rounded-lg bg-emerald-950/30 border border-emerald-500/20 text-xs text-emerald-300 space-y-1">
-                    <div className="font-bold flex items-center gap-1.5 text-emerald-400">
-                      <Sparkles className="w-3.5 h-3.5" />
-                      Gemini AI Recommendation Pitch:
+                  <div className="p-3 bg-white border border-black text-xs text-black space-y-1">
+                    <div className="font-bold">
+                      Recommendation Pitch:
                     </div>
-                    <p className="text-slate-300 leading-relaxed font-sans">{item.aiPitch}</p>
+                    <p className="text-black">{item.aiPitch}</p>
                   </div>
 
                   {/* Action Buttons */}
                   <div className="pt-2 flex items-center justify-between text-xs">
-                    <div className="text-slate-400">
-                      Owner: <span className="text-slate-200">{item.listing.nama_pemilik} ({item.listing.no_hp})</span>
+                    <div className="text-black">
+                      Owner: <span className="font-bold">{item.listing.nama_pemilik} ({item.listing.no_hp})</span>
                     </div>
 
                     <button
                       onClick={() => setSelectedListingModal(item.listing)}
-                      className="px-3 py-1.5 rounded-lg bg-slate-800 text-emerald-400 hover:bg-slate-700 font-bold flex items-center gap-1"
+                      className="font-bold text-[10px] uppercase hover:underline"
                     >
-                      Lihat Full Detail Unit
-                      <ArrowUpRight className="w-3.5 h-3.5" />
+                      [Detail Unit]
                     </button>
                   </div>
                 </div>

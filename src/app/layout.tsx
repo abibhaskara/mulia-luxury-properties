@@ -21,7 +21,7 @@ export default function RootLayout({
           href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css"
         />
       </head>
-      <body className="antialiased bg-slate-950 text-slate-100">
+      <body className="antialiased bg-white text-black">
         {children}
       </body>
     </html>
