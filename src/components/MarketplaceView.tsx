@@ -62,20 +62,9 @@ export default function MarketplaceView({ listings, onOpenMatchModal }: Marketpl
     return `Rp ${(price / 1000000).toLocaleString("id-ID", { maximumFractionDigits: 0 })} Jt`;
   };
 
-  // Preset location search tags
-  const quickLocationTags = [
-    "Kuta Utara",
-    "Badung",
-    "Canggu",
-    "Uluwatu",
-    "Pondok Indah",
-    "Jakarta Selatan",
-    "BSD City",
-    "Bandung",
-  ];
-
   return (
     <div className="space-y-6">
+
       {/* Banner / Hero Header */}
       <div className="border border-black p-6 sm:p-8 bg-white">
         <div className="max-w-2xl space-y-3">
@@ -148,34 +137,9 @@ export default function MarketplaceView({ listings, onOpenMatchModal }: Marketpl
           </div>
         </div>
 
-        {/* Quick Location Chips */}
-        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-black/20 text-xs">
-          <span className="font-bold text-black text-xs">Filter Wilayah Spesifik:</span>
-          <button
-            onClick={() => setSearchTerm("")}
-            className={`px-2 py-0.5 border border-black text-[11px] font-bold ${
-              !searchTerm ? "bg-black text-white" : "bg-white text-black hover:bg-gray-100"
-            }`}
-          >
-            Semua Wilayah
-          </button>
-          {quickLocationTags.map((tag) => (
-            <button
-              key={tag}
-              onClick={() => setSearchTerm(tag)}
-              className={`px-2 py-0.5 border border-black text-[11px] font-bold ${
-                searchTerm.toLowerCase() === tag.toLowerCase()
-                  ? "bg-black text-white"
-                  : "bg-white text-black hover:bg-gray-100"
-              }`}
-            >
-              📍 {tag}
-            </button>
-          ))}
-        </div>
-
         {/* Results Counter */}
         <div className="flex items-center justify-between text-xs text-black border-t border-black pt-3">
+
           <div>
             Menampilkan <span className="font-bold">{filteredListings.length}</span> dari {listings.length} unit properti
           </div>
@@ -193,6 +157,7 @@ export default function MarketplaceView({ listings, onOpenMatchModal }: Marketpl
             </button>
           )}
         </div>
+
       </div>
 
       {/* Property Cards Grid */}
