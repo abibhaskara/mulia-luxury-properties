@@ -2,12 +2,12 @@ import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import * as schema from "./schema";
 
-const rawUrl = process.env.TURSO_DATABASE_URL || "file:local.db";
+const rawUrl = process.env.TURSO_DATABASE_URL || "http://127.0.0.1:8080";
 const authToken = process.env.TURSO_AUTH_TOKEN;
 
-// If a Turso libsql:// URL is set but no Auth Token is provided, fallback to local sqlite file to avoid connection authorization errors.
+// If a Turso libsql:// URL is set but no Auth Token is provided, fallback to dummy HTTP to avoid auth errors and Edge crashes.
 const isRemoteWithoutToken = rawUrl.startsWith("libsql://") && !authToken;
-const url = isRemoteWithoutToken ? "file:local.db" : rawUrl;
+const url = isRemoteWithoutToken ? "http://127.0.0.1:8080" : rawUrl;
 
 export const client = createClient({
   url,

@@ -1,6 +1,6 @@
 export const runtime = 'edge';
 import { NextResponse } from "next/server";
-import crypto from "crypto";
+
 
 export async function POST(req: Request) {
   try {
@@ -38,7 +38,11 @@ export async function POST(req: Request) {
       // Signed Upload
       const timestamp = Math.floor(Date.now() / 1000).toString();
       const stringToSign = `folder=${targetFolder}&timestamp=${timestamp}${apiSecret}`;
-      const signature = crypto.createHash("sha1").update(stringToSign).digest("hex");
+      const encoder = new TextEncoder();
+      const data = encoder.encode(stringToSign);
+      const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const signature = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
       cloudFormData.append("api_key", apiKey);
       cloudFormData.append("timestamp", timestamp);

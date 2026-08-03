@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { listings } from "@/db/schema";
 import { initDb } from "@/db/init";
 import { getEmbedding } from "@/lib/ai";
-import { randomUUID } from "crypto";
+
 
 export async function GET(request: Request) {
   try {
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const id = body.id || `lst-${randomUUID().substring(0, 8)}`;
+    const id = body.id || `lst-${crypto.randomUUID().substring(0, 8)}`;
 
     const textSummary = `Properti ${body.jenis || ""} di ${body.lokasi_area}. Harga Rp ${body.harga}. ${
       body.luas_tanah || 0

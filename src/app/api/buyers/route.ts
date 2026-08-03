@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { buyers } from "@/db/schema";
 import { initDb } from "@/db/init";
-import { randomUUID } from "crypto";
+
 
 export async function GET(request: Request) {
   try {
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "Nama klien wajib diisi" }, { status: 400 });
     }
 
-    const id = body.id || `byr-${randomUUID().substring(0, 8)}`;
+    const id = body.id || `byr-${crypto.randomUUID().substring(0, 8)}`;
 
     const newBuyer = {
       id,
