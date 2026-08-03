@@ -136,7 +136,7 @@ export default function ListingsManager({ listings, onRefresh, onOpenMatchModal 
         {([
           { value: selectedStatus, setter: setSelectedStatus, options: [["ALL","Semua Status"],["AVAILABLE","Available"],["BOOKING","Booking"],["SOLD","Sold"]] },
           { value: selectedJenis,  setter: setSelectedJenis,  options: [["ALL","Semua Jenis"],["RUMAH","Rumah"],["VILLA","Villa"],["RUKO","Ruko"],["TANAH","Tanah"]] },
-        ] as const).map((f, i) => (
+        ] as { value: string; setter: (v: string) => void; options: [string, string][] }[]).map((f, i) => (
           <select
             key={i}
             value={f.value}
@@ -144,7 +144,7 @@ export default function ListingsManager({ listings, onRefresh, onOpenMatchModal 
             className="px-3 py-2 text-sm rounded-xl border focus:outline-none"
             style={{ borderColor: "#ebebeb", backgroundColor: "#f9f9f9", color: "#111" }}
           >
-            {(f.options as [string,string][]).map(([v,l]) => <option key={v} value={v}>{l}</option>)}
+            {f.options.map(([v,l]) => <option key={v} value={v}>{l}</option>)}
           </select>
         ))}
       </div>
@@ -174,8 +174,8 @@ export default function ListingsManager({ listings, onRefresh, onOpenMatchModal 
                     </td>
                   </tr>
                 ) : filteredListings.map((item) => {
-                  const pill  = STATUS_PILL[item.status]  || STATUS_PILL.AVAILABLE;
-                  const dot   = TYPE_DOT[item.jenis]      || "#9ca3af";
+                  const pill  = STATUS_PILL[item.status as string]  ?? STATUS_PILL.AVAILABLE;
+                  const dot   = TYPE_DOT[item.jenis as string]       ?? "#9ca3af";
                   return (
                     <tr
                       key={item.id}
@@ -289,8 +289,8 @@ export default function ListingsManager({ listings, onRefresh, onOpenMatchModal 
               <p className="text-sm font-medium" style={{ color: "#9ca3af" }}>Tidak ada listing yang sesuai.</p>
             </div>
           ) : filteredListings.map((item) => {
-            const pill = STATUS_PILL[item.status] || STATUS_PILL.AVAILABLE;
-            const dot  = TYPE_DOT[item.jenis] || "#9ca3af";
+            const pill = STATUS_PILL[item.status as string] ?? STATUS_PILL.AVAILABLE;
+            const dot  = TYPE_DOT[item.jenis as string] ?? "#9ca3af";
             return (
               <div
                 key={item.id}

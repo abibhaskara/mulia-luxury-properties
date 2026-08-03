@@ -137,15 +137,15 @@ export default function MarketplaceView({ listings, onOpenMatchModal }: Marketpl
             { value: selectedJenis,    setter: setSelectedJenis,    options: [["ALL","Semua Jenis"],["RUMAH","Rumah"],["VILLA","Villa"],["RUKO","Ruko"],["TANAH","Tanah"]] },
             { value: selectedSewaJual, setter: setSelectedSewaJual, options: [["ALL","Jual / Sewa"],["JUAL","Dijual"],["SEWA","Disewakan"]] },
             { value: selectedStatus,   setter: setSelectedStatus,   options: [["ALL","Semua Status"],["AVAILABLE","Available"],["BOOKING","Booking"],["SOLD","Sold"]] },
-          ] as const).map((f, i) => (
+          ] as { value: string; setter: (v: string) => void; options: [string, string][] }[]).map((f, i) => (
             <select
               key={i}
               value={f.value}
-              onChange={(e) => (f.setter as any)(e.target.value)}
+              onChange={(e) => f.setter(e.target.value)}
               className="px-3 py-2 text-sm rounded-xl border focus:outline-none focus:ring-1 focus:ring-gray-300 transition"
               style={{ borderColor: "#ebebeb", backgroundColor: "#f9f9f9", color: "#111" }}
             >
-              {(f.options as [string, string][]).map(([v, l]) => (
+              {f.options.map(([v, l]) => (
                 <option key={v} value={v}>{l}</option>
               ))}
             </select>
@@ -188,9 +188,9 @@ export default function MarketplaceView({ listings, onOpenMatchModal }: Marketpl
               ? item.link_foto
               : ["https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80"];
             const currentIdx  = activeImageIndex[item.id] || 0;
-            const cardBg      = PASTEL_BG[item.jenis]     || "#f9f9f9";
-            const accentColor = PASTEL_ACCENT[item.jenis] || "#111111";
-            const statusStyle = STATUS_STYLE[item.status] || STATUS_STYLE.AVAILABLE;
+            const cardBg      = PASTEL_BG[item.jenis as string]     ?? "#f9f9f9";
+            const accentColor = PASTEL_ACCENT[item.jenis as string] ?? "#111111";
+            const statusStyle = STATUS_STYLE[item.status as string] ?? STATUS_STYLE.AVAILABLE;
 
             return (
               <div
